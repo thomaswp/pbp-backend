@@ -1,3 +1,3 @@
 [submodule "pbp"]
 	path = pbp
-	url = git@github.ncsu.edu:HINTSLab/pbp.git
+	url = https://github.ncsu.edu/HINTSLab/pbp.git
