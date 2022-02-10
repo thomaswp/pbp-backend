@@ -17,6 +17,7 @@ This is  a source code for CS-Help webapp. CS-Help is a prototype development en
    ```
    docker-compose up --build
    ```
+   To access the frontend, go to [localhost:3060](http://localhost:3060)
 4. To stop the applications, run the following command:
    ```
    docker-compose stop
