@@ -1,8 +1,8 @@
 const express = require('express')
 const app = express()
-const port = 3000
+const port = process.env.NODE_DOCKER_PORT || 5000
 
-app.get('/', (req, res) => {
+app.get('/api', (req, res) => {
   res.send('Hello World!')
 })
 
