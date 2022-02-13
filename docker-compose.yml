@@ -36,7 +36,7 @@ services:
     build: ./pbp
     restart: unless-stopped
     expose:
-      - 8080
+      - $VUE_DOCKER_PORT
     stdin_open: true
     tty: true
   nginx:

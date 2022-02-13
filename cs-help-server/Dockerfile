@@ -1,5 +1,5 @@
 # Install image of the nodejs version
-FROM node:latest
+FROM node:16
 
 # Path of the working directory
 WORKDIR /cs-help-server
