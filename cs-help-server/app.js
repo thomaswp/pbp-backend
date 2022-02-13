@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require("body-parser");
 const port = process.env.NODE_DOCKER_PORT || 5000;
+require("./src/routes/user.routes")(app);
 
 // parse requests of content-type - application/json
 app.use(bodyParser.json());
