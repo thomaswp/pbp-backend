@@ -13,6 +13,21 @@ app.get('/api', (req, res) => {
   res.send('Hello World!');
 });
 
+const bodyParser = require('body-parser');
+// const cors = require('cors');
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+
+
+app.post('/email', (req, res) => {
+  console.log(req);
+  const email = req.body.mail;
+  console.log("Email:");
+  console.log(email);
+  res.send("Email added to database");
+});
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 })
