@@ -7,7 +7,7 @@ const path = require('path')
 
 app.get('/', (req, res) => {
   // res.send('Hello World!')
-  res.sendFile(path.join(__dirname, "../pbp/index.html"))
+  res.sendFile(path.join(__dirname, "../pbp/login.html"))
 })
 
 const bodyParser = require('body-parser');
