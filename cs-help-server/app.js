@@ -13,14 +13,7 @@ app.get('/api', (req, res) => {
   res.send('Hello World!');
 });
 
-const bodyParser = require('body-parser');
-// const cors = require('cors');
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
-
-
-app.post('/email', (req, res) => {
+app.post('/api/email', (req, res) => {
   console.log(req);
   const email = req.body.mail;
   console.log("Email:");
