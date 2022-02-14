@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 const bodyParser = require("body-parser");
+const swaggerUI = require('swagger-ui-express');
+const v1_docs = require('./docs/api/v1');
 const port = process.env.NODE_DOCKER_PORT || 5000;
 require("./src/routes/user.routes")(app);
 
@@ -8,6 +10,9 @@ require("./src/routes/user.routes")(app);
 app.use(bodyParser.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Swagger API docs
+app.use('/api/v1', swaggerUI.serve, swaggerUI.setup(v1_docs));
 
 app.get('/api', (req, res) => {
   res.send('Hello World!');

@@ -17,6 +17,7 @@
     "mocha": "^9.2.0",
     "mongoose": "^6.2.1",
     "passport": "^0.5.2",
-    "passport-google-oidc": "^0.1.0"
+    "passport-google-oidc": "^0.1.0",
+    "swagger-ui-express": "^4.3.0"
   }
 }
