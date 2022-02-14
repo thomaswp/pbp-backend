@@ -14,9 +14,13 @@ services:
       - db:/data/db
   app-backend:
     container_name: cs-help-server
+    build: ./cs-help-server
     depends_on:
       - mongodb
-    build: ./cs-help-server
+    volumes:
+      - ./cs-help-server:/cs-help-server
+      - /cs-help-server/node_modules
+    command: nodemon app.js
     restart: unless-stopped
     env_file: ./.env
     expose:
