@@ -11,6 +11,7 @@ This is  a source code for CS-Help webapp. CS-Help is a prototype development en
     MONGODB_DOCKER_PORT=27017
     NODE_LOCAL_PORT=6868
     NODE_DOCKER_PORT=5000
+    VUE_DOCKER_PORT=8080
     ```
 2. Make sure you have Docker installed in your machine. The installation guide can be found [here](https://docs.docker.com/get-docker/)
 3. In your terminal, run the folllowing command:
