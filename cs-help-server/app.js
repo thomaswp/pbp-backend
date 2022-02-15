@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const swaggerUI = require("swagger-ui-express");
+var csrf = require('csurf');
 var cookieParser = require("cookie-parser");
 var session = require("express-session");
 var passport = require("passport");
@@ -34,6 +35,19 @@ app.use(
     saveUninitialized: true,
   })
 );
+app.use(csrf());
+app.use(passport.authenticate('session'));
+app.use(function(req, res, next) {
+  var msgs = req.session.messages || [];
+  res.locals.messages = msgs;
+  res.locals.hasMessages = !! msgs.length;
+  req.session.messages = [];
+  next();
+});
+app.use(function(req, res, next) {
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
 
 // main apis
 app.use("/", authRouter);
