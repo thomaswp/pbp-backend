@@ -1,26 +1,40 @@
 const db = require("../models");
 const FederatedIdentity = db.federatedidentity;
 
-// Create a user
+/**
+ * Create a new Federated ID
+ * @param {*} federatedID
+ * @returns newly created federated ID (Promise)
+ */
 exports.createFederatedID = (federatedID) => {
-  const newFedID = new FederatedIdentity({
-    provider: federatedID.provider,
-    subject: federatedID.subject,
-    internal_id: federatedID.internal_id,
-  });
-
-  return newFedID.save(newFedID);
+  if (federatedID.provider && federatedID.subject && federatedID.internal_id) {
+    const newFedID = new FederatedIdentity({
+      provider: federatedID.provider,
+      subject: federatedID.subject,
+      internal_id: federatedID.internal_id,
+    });
+    return newFedID.save(newFedID);
+  }
+  return false;
 };
 
-// Find a user
+/**
+ * Find an existing federated ID using the provider and subject ID
+ * @param {*} federatedID: Contains provider and subject
+ * @returns FederatedIdentity {provider, subject, internal_id}
+ */
 exports.findFederatedID = (federatedID) => {
   return FederatedIdentity.findOne({
-    provider: federatedID.provider,
-    subject: federatedID.subject,
+    provider: federatedID?.provider,
+    subject: federatedID?.subject,
   });
 };
 
-// Update a user data
+/**
+ * Update the internal_id of existing FederatedIdentity
+ * @param {*} federatedID
+ * @returns true if update is successful
+ */
 exports.updateFederatedID = (federatedID) => {
   if (federatedID) {
     FederatedIdentity.updateOne(
@@ -30,16 +44,31 @@ exports.updateFederatedID = (federatedID) => {
       },
       {
         internal_id: federatedID.internal_id,
+      },
+      (err, fedID) => {
+        if (err) {
+          return false
+        }
+        return fedID;
       }
     );
   }
   return false;
 };
 
-// Delete a user
+/**
+ * Delete an existing FederatedIdentity using internal_id
+ * @param {*} federatedID: Contains internal_id
+ * @returns Promise whether delete is successful or not successful
+ */
 exports.deleteFederatedID = (federatedID) => {
-  return FederatedIdentity.deleteOne({
-    provider: federatedID.provider,
-    subject: federatedID.subject,
-  });
+  FederatedIdentity.deleteOne(
+    {
+      internal_id: federatedID.internal_id,
+    },
+    (err, deletedFedID) => {
+      if (err) return false;
+      else return deletedFedID;
+    }
+  );
 };

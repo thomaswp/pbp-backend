@@ -1,6 +1,6 @@
 /**
  * Router to handle authentication with Passport
- *
+ * This router is used to handle Passport authentication using Google OAuth2
  */
 const { GOOGLE_ID, GOOGLE_SECRET } = process.env;
 const express = require("express");
@@ -11,6 +11,11 @@ const fedIDController = require("../controllers/federated_identity.controller");
 
 /**
  * Passport Authentication Implementation
+ * Passport allows us to use Google OAuth2 Authentication system
+ *
+ * GOOGLE_ID: Google ID credential
+ * GOOGLE_SECRET: Secret for the Google OAuth2 service
+ * callbackURL: redirect page after authentication is complete
  */
 passport.use(
   new GoogleStrategy(
@@ -23,9 +28,9 @@ passport.use(
     async (accessToken, refreshToken, profile, cb) => {
       console.log(profile);
       const subject = profile.id;
-      const name = `${profile.name.givenName}_${profile.name.familyName}`;
+      const name = `${profile.name?.givenName}_${profile.name?.familyName}`;
       const provider = profile.provider;
-      const email = profile.emails[0].value;
+      const email = profile.emails[0]?.value;
 
       const currentFedID = await fedIDController.findFederatedID({
         provider,
@@ -43,7 +48,7 @@ passport.use(
         });
         if (!newUser) {
           console.log(`Something went wrong when creating new user!`);
-          return done(null, false, {
+          return cb(null, false, {
             message: `Something went wrong when creating user`,
           });
         }
@@ -54,7 +59,7 @@ passport.use(
         });
         if (!newFedID) {
           console.log(`Something went wrong when creating new Federated ID!`);
-          return done(null, false, {
+          return cb(null, false, {
             message: `Something went wrong when creating Federated ID`,
           });
         }
@@ -92,10 +97,18 @@ passport.deserializeUser(async (id, cb) => {
  */
 let router = express.Router();
 
-// Entry route to start Google authentication
+/**
+ * Entry route to start Google authentication
+ * url: GET /api/v1/login/federated/google
+ * returns: Redirect to Google login
+ */
 router.get("/api/v1/login/federated/google", passport.authenticate("google"));
 
-// Redirect route after Google authentication
+/**
+ * API used by Google after authentication
+ * url: GET /api/v1/oauth2/redirect/google
+ * returns: redirect to success or failure login page
+ */
 router.get(
   "/api/v1/oauth2/redirect/google",
   passport.authenticate("google", {
@@ -104,7 +117,11 @@ router.get(
   })
 );
 
-// Logout
+/**
+ * API to logout current user and delete session
+ * url: POST /api/v1/logout/google
+ * returns: redirect to the login page
+ */
 router.post("/api/v1/logout/google", (req, res, next) => {
   req.logout();
   res.redirect("/login");

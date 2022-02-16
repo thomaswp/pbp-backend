@@ -5,7 +5,6 @@
  * projects: List of project identifier
  * templates: list of project templates
  * */
-
 module.exports = (mongoose) => {
   let schema = mongoose.Schema(
     {
