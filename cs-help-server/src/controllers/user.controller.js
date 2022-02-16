@@ -25,7 +25,7 @@ exports.createUser = (user) => {
  * @returns User (promise)
  */
 exports.findUser = (userID) => {
-  return User.findOne({ id: userID });
+  return User.findById(userID);
 };
 
 // Return all users

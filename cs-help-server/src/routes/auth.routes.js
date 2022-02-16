@@ -36,6 +36,7 @@ passport.use(
         provider,
         subject,
       });
+      console.log(`foundID: ${currentFedID}`);
 
       // Check if federated exist. If not, create new user, otherwise return existing user
       if (!currentFedID) {
@@ -69,6 +70,7 @@ passport.use(
         const currentUser = await userController.findUser(
           currentFedID.internal_id
         );
+        console.log(`foundUser: ${currentUser}`);
         if (!currentUser) {
           console.log(
             `Something went wrong, user does not exist but federated ID exist. Check DB!`
@@ -124,7 +126,10 @@ router.get(
  */
 router.post("/api/v1/logout/google", (req, res, next) => {
   req.logout();
-  res.redirect("/login");
+  req.session.destroy((err) => {
+    res.clearCookie("connect.sid");
+    res.send("Logout triggered");
+  });
 });
 
 module.exports = router;

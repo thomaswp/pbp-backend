@@ -24,6 +24,7 @@ exports.createFederatedID = (federatedID) => {
  * @returns FederatedIdentity {provider, subject, internal_id}
  */
 exports.findFederatedID = (federatedID) => {
+  console.log(`findFederatedID: ${federatedID.provider}, ${federatedID.subject}`)
   return FederatedIdentity.findOne({
     provider: federatedID?.provider,
     subject: federatedID?.subject,

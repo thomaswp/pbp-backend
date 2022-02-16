@@ -2,11 +2,11 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const swaggerUI = require("swagger-ui-express");
-var csrf = require('csurf');
-var cookieParser = require("cookie-parser");
-var session = require("express-session");
-var passport = require("passport");
-var MongoDBStore = require("connect-mongodb-session")(session);
+const csrf = require('csurf');
+const cookieParser = require("cookie-parser");
+const session = require("express-session");
+const passport = require("passport");
+const MongoDBStore = require("connect-mongodb-session")(session);
 
 const db = require("./src/models");
 const v1_docs = require("./docs/api/v1");
@@ -35,7 +35,7 @@ app.use(
     saveUninitialized: true,
   })
 );
-app.use(csrf());
+// app.use(csrf());
 app.use(passport.authenticate('session'));
 app.use(function(req, res, next) {
   var msgs = req.session.messages || [];
@@ -44,10 +44,10 @@ app.use(function(req, res, next) {
   req.session.messages = [];
   next();
 });
-app.use(function(req, res, next) {
-  res.locals.csrfToken = req.csrfToken();
-  next();
-});
+// app.use(function(req, res, next) {
+//   res.locals.csrfToken = req.csrfToken();
+//   next();
+// });
 
 // main apis
 app.use("/", authRouter);
