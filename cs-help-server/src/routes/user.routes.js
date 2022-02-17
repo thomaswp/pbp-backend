@@ -18,12 +18,11 @@ router.get("/api/v1/users/:id", ensureLoggedIn, (req, res) => {
   res.json(sampleUser);
 });
 
-router.get("/api/v1/user", ensureLoggedIn, async (req, res) => {
-  let currentUser = await userController.findUser(req.session.passport.user);
-
+router.get("/api/v1/user", async (req, res) => {
+  let currentUser = await userController.findUser(req.session.passport?.user);
+  console.log(`GET /api/v1/user current user: ${currentUser}`);
   if (!currentUser) {
-    res.status(400);
-    res.send("Failed to get current user");
+    res.json({errMesg: "Unautenticated"});
   } else {
     res.json(currentUser);
   }
