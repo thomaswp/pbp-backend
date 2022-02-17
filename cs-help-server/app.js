@@ -1,15 +1,16 @@
 const express = require("express");
-const app = express();
 const bodyParser = require("body-parser");
 const swaggerUI = require("swagger-ui-express");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const passport = require("passport");
+const createError = require('http-errors');
 const MongoDBStore = require("connect-mongodb-session")(session);
 
 const db = require("./src/models");
 const v1_docs = require("./docs/api/v1");
 
+const app = express();
 const port = process.env.NODE_DOCKER_PORT || 5000;
 
 userRouter = require("./src/routes/user.routes");
@@ -50,13 +51,25 @@ app.use("/", userRouter);
 // Swagger API docs
 app.use("/api/v1", swaggerUI.serve, swaggerUI.setup(v1_docs));
 
-// test api
-app.get("/api", (req, res) => {
-  res.send("Hello World!");
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  next(createError(404));
+});
+
+// error handler
+app.use(function(err, req, res, next) {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = {};
+
+  // render the error page
+  res.status(err.status || 500);
+  res.send(`404 ${err.message}`);
+  //res.render('error');
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`CS-Help app listening on port ${port}`);
 });
 
 // Connect to database
