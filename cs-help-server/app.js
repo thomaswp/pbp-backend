@@ -2,7 +2,6 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const swaggerUI = require("swagger-ui-express");
-const csrf = require('csurf');
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const passport = require("passport");
@@ -23,7 +22,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
   session({
-    secret: "This is a secret",
+    secret: "CS-Help-Secret",
     cookie: {
       maxAge: 1000 * 60 * 60 * 24 * 1, // 1 day
     },
@@ -31,11 +30,10 @@ app.use(
       uri: db.url,
       collection: "mySessions",
     }),
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
   })
 );
-// app.use(csrf());
 app.use(passport.authenticate('session'));
 app.use(function(req, res, next) {
   var msgs = req.session.messages || [];
@@ -44,10 +42,6 @@ app.use(function(req, res, next) {
   req.session.messages = [];
   next();
 });
-// app.use(function(req, res, next) {
-//   res.locals.csrfToken = req.csrfToken();
-//   next();
-// });
 
 // main apis
 app.use("/", authRouter);

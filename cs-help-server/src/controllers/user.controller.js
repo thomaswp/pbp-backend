@@ -28,7 +28,6 @@ exports.findUser = (userID) => {
   return User.findById(userID);
 };
 
-// Return all users
 /**
  * Find all user in the database
  * @param {*} req: request object

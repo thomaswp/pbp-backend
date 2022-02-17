@@ -8,6 +8,11 @@ const userController = require("../controllers/user.controller");
 let router = express.Router();
 let ensureLoggedIn = ensureLogIn();
 
+/**
+ * API used to test get user
+ * url: GET /api/v1/users/:id
+ * returns: passed ID
+ */
 router.get("/api/v1/users/:id", ensureLoggedIn, (req, res) => {
   let id = req.params.id;
   let sampleUser = {
@@ -18,6 +23,11 @@ router.get("/api/v1/users/:id", ensureLoggedIn, (req, res) => {
   res.json(sampleUser);
 });
 
+/**
+ * API used to get logged-in user data
+ * url: GET /api/v1/user
+ * returns: User record
+ */
 router.get("/api/v1/user", async (req, res) => {
   let currentUser = await userController.findUser(req.session.passport?.user);
   console.log(`GET /api/v1/user current user: ${currentUser}`);
