@@ -1,6 +1,5 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const swaggerUI = require("swagger-ui-express");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const passport = require("passport");
@@ -8,7 +7,6 @@ const createError = require('http-errors');
 const MongoDBStore = require("connect-mongodb-session")(session);
 
 const db = require("./src/models");
-const v1_docs = require("./docs/api/v1");
 
 const app = express();
 const port = process.env.NODE_DOCKER_PORT || 5000;
@@ -49,7 +47,7 @@ app.use("/", authRouter);
 app.use("/", userRouter);
 
 // Swagger API docs
-app.use("/api/v1", swaggerUI.serve, swaggerUI.setup(v1_docs));
+require("./docs")(app);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
