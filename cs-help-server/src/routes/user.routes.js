@@ -32,7 +32,8 @@ router.get("/api/v1/user", async (req, res) => {
   let currentUser = await userController.findUser(req.session.passport?.user);
   console.log(`GET /api/v1/user current user: ${currentUser}`);
   if (!currentUser) {
-    res.json({errMesg: "Unautenticated"});
+    res.status(401);
+    res.json({errMesg: "Unauthenticated"});
   } else {
     res.json(currentUser);
   }
