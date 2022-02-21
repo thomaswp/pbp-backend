@@ -28,7 +28,7 @@ passport.use(
     async (accessToken, refreshToken, profile, cb) => {
       console.log(profile);
       const subject = profile.id;
-      const name = `${profile.name?.givenName}_${profile.name?.familyName}`;
+      const name = `${profile.name?.givenName} ${profile.name?.familyName}`;
       const provider = profile.provider;
       const email = profile.emails[0]?.value;
 
