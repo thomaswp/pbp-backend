@@ -14,7 +14,7 @@ defaults:
 jobs:
   build:
 
-    runs-on: x64
+    runs-on: global
 
     strategy:
       matrix:

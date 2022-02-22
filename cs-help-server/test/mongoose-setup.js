@@ -3,6 +3,7 @@ const db = require("../src/models");
 
 module.exports = function (callback) {
   beforeEach(async function () {
+    this.timeout(120000);
     db.url = global.mongoUrl;
     let dbConnectSuccess = await db.mongoose.connect(db.url, {
       useNewUrlParser: true,
