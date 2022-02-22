@@ -13,6 +13,6 @@ describe("User", function () {
       projects: [{ name: "p1", id: "0" }],
       templates: ["p1_template"],
     };
-    //newUser = await userController.createUser(user);
+    newUser = await userController.createUser(user);
   });
 });

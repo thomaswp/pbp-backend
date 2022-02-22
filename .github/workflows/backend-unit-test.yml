@@ -14,7 +14,7 @@ defaults:
 jobs:
   build:
 
-    runs-on: global
+    runs-on: linux
 
     strategy:
       matrix:
