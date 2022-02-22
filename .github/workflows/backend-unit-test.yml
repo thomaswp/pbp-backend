@@ -14,7 +14,7 @@ defaults:
 jobs:
   build:
 
-    runs-on: linux
+    runs-on: self-hosted
 
     strategy:
       matrix:
