@@ -16,7 +16,7 @@ defaults:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: global
 
     strategy:
       matrix:
