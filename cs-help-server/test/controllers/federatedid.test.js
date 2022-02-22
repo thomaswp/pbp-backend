@@ -12,6 +12,6 @@ describe("FederatedID", function () {
         subject: "345b",
         internal_id: "3345"
     };
-    newFedId = await fedIDCOntroller.createFederatedID(fedId);
+    //newFedId = await fedIDCOntroller.createFederatedID(fedId);
   });
 });

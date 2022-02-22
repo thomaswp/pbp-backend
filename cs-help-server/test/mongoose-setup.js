@@ -17,5 +17,6 @@ module.exports = function () {
 
   afterEach(async function () {
     await db.mongoose.disconnect();
+    console.log("disconnected");
   });
 };
