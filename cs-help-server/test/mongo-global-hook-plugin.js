@@ -2,7 +2,7 @@ const { GenericContainer } = require('testcontainers');
  
 module.exports.mochaHooks = {
     beforeAll: async function () {
-        this.timeout(60 * 1000);
+        this.timeout(60 * 10000);
  
         global.mongoContainer = await new GenericContainer("mongo", "latest")
             .withEnv("MONGO_INITDB_ROOT_USERNAME", "root")
