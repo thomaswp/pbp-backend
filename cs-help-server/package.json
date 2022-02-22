@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "test:unit": "mocha"
+    "test": "mocha --reporter spec ./test/**/*.js --require ./test/mongo-global-hook-plugin.js --timeout 600000"
   },
   "author": "Vitus Putra",
   "license": "ISC",
@@ -24,5 +24,9 @@
     "passport": "^0.5.2",
     "passport-google-oauth20": "^2.0.0",
     "swagger-ui-express": "^4.3.0"
+  },
+  "devDependencies": {
+    "expect": "^27.5.1",
+    "testcontainers": "^8.2.0"
   }
 }
