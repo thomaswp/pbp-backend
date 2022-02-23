@@ -33,5 +33,6 @@ jobs:
     - run: npm install
     - run: npm ci
     - run: npm run build --if-present
+    - run: docker --version
     - run: npm run test
       working-directory: cs-help-server
