@@ -23,11 +23,16 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
-    - run: docker-compose -f .github/docker-compose-mongo.yml up --build -d
-    - run: npm install
+    - name: Build and run MongoDB
+      run: docker-compose -f .github/docker-compose-mongo.yml up --build -d
+    - name: Install dependency
+      run: npm install
       working-directory: cs-help-server
-    - run: npm ci
+    - name: Check for dependency problem
+      run: npm ci
       working-directory: cs-help-server
-    - run: npm run test
+    - name: Run unit tests
+      run: npm run test
       working-directory: cs-help-server
-    - run: docker-compose -f .github/docker-compose-mongo.yml down --volumes
+    - name: Stop MongoDB
+      run: docker-compose -f .github/docker-compose-mongo.yml down --volumes

@@ -1,7 +1,8 @@
 // test/account.test.js
-const expect = require("expect");
+const { expect, assert } = require('chai');
 const setup = require("../mongoose-setup");
 const userController = require("../../src/controllers/user.controller");
+
 
 describe("User", function () {
   setup();
@@ -14,5 +15,7 @@ describe("User", function () {
       templates: ["p1_template"],
     };
     newUser = await userController.createUser(user);
+    assert.isNotNull(newUser)
+    expect(newUser.name).to.equal(user.name);
   });
 });
