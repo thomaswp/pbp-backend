@@ -24,9 +24,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - name: Build and run MongoDB
-      run: docker-compose -f .github/docker-compose-mongo.yml up --build -d
-    - name: Check that MongoDB is running
-      run: docker ps
+      run: docker-compose -f .github/docker-compose-mongo.yml up --build
     - name: Install dependency
       run: npm install
       working-directory: cs-help-server
@@ -36,5 +34,7 @@ jobs:
     - name: Run unit tests
       run: npm run test
       working-directory: cs-help-server
+    - name: Check that MongoDB is running
+      run: docker ps
     - name: Stop MongoDB
       run: docker-compose -f .github/docker-compose-mongo.yml down --volumes
