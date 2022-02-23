@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "test": "mocha --reporter spec ./test/**/*.js --require ./test/mongo-global-hook-plugin.js --timeout 80000"
+    "test": "mocha --reporter spec ./test/**/*.js --require ./test/mongo-global-hook-plugin.js --timeout 80000",
+    "coverage": "nyc npm run test"
   },
   "author": "Vitus Putra",
   "license": "ISC",
@@ -27,6 +28,7 @@
   },
   "devDependencies": {
     "expect": "^27.5.1",
+    "nyc": "^15.1.0",
     "testcontainers": "^8.2.0"
   }
 }
