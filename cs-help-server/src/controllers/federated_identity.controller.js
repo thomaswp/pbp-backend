@@ -9,8 +9,10 @@ const FederatedIdentity = db.federatedidentity;
 exports.createFederatedID = (federatedID) => {
   if (federatedID.provider && federatedID.subject && federatedID.internal_id) {
     const newFedID = new FederatedIdentity({
-      provider: federatedID.provider,
-      subject: federatedID.subject,
+      _id: {
+        provider: federatedID.provider,
+        subject: federatedID.subject,
+      },
       internal_id: federatedID.internal_id,
     });
     return newFedID.save(newFedID);
@@ -24,10 +26,12 @@ exports.createFederatedID = (federatedID) => {
  * @returns FederatedIdentity {provider, subject, internal_id}
  */
 exports.findFederatedID = (federatedID) => {
-  console.log(`findFederatedID: ${federatedID.provider}, ${federatedID.subject}`)
-  return FederatedIdentity.findOne({
-    provider: federatedID?.provider,
-    subject: federatedID?.subject,
+  // console.log(
+  //   `findFederatedID: ${federatedID.provider}, ${federatedID.subject}`
+  // );
+  return FederatedIdentity.findById({
+      provider: federatedID?.provider,
+      subject: federatedID?.subject
   });
 };
 
@@ -36,40 +40,37 @@ exports.findFederatedID = (federatedID) => {
  * @param {*} federatedID
  * @returns true if update is successful
  */
-exports.updateFederatedID = (federatedID) => {
-  if (federatedID) {
-    FederatedIdentity.updateOne(
-      {
-        provider: federatedID.provider,
-        subject: federatedID.subject,
-      },
-      {
-        internal_id: federatedID.internal_id,
-      },
-      (err, fedID) => {
-        if (err) {
-          return false
-        }
-        return fedID;
-      }
-    );
-  }
-  return false;
-};
+// exports.updateFederatedID = (federatedID) => {
+//   if (federatedID) {
+//     FederatedIdentity.updateOne(
+//       {
+//         provider: federatedID.provider,
+//         subject: federatedID.subject,
+//       },
+//       {
+//         internal_id: federatedID.internal_id,
+//       },
+//       (err, fedID) => {
+//         if (err) {
+//           return false
+//         }
+//         return fedID;
+//       }
+//     );
+//   }
+//   return false;
+// };
 
 /**
  * Delete an existing FederatedIdentity using internal_id
- * @param {*} federatedID: Contains internal_id
+ * @param {*} internalID: User internal ID
  * @returns Promise whether delete is successful or not successful
  */
-exports.deleteFederatedID = (federatedID) => {
-  FederatedIdentity.deleteOne(
+exports.deleteFederatedID = async (internalID) => {
+  let res = await FederatedIdentity.deleteOne(
     {
-      internal_id: federatedID.internal_id,
-    },
-    (err, deletedFedID) => {
-      if (err) return false;
-      else return deletedFedID;
+      internal_id: internalID,
     }
   );
+  return res;
 };

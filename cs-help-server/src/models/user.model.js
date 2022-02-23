@@ -8,6 +8,7 @@
 module.exports = (mongoose) => {
   let schema = mongoose.Schema(
     {
+      _id: String,
       name: String,
       email: String,
       projects: [{ name: String, id: String }],
