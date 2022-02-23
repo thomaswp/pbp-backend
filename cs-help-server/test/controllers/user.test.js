@@ -59,7 +59,7 @@ describe("User controller test", function () {
 
   it("delete invalid user", async function () {
     let res = await userController.deleteUser("nonexistendID");
-    assert.equal(res.deletedCount, 0);
+    assert.isNull(res);
   });
 
   it("delete valid user", async function () {
@@ -71,7 +71,7 @@ describe("User controller test", function () {
     };
     newUser = await userController.createUser(user);
     let res = await userController.deleteUser(newUser.id);
-    assert.equal(res.deletedCount, 1);
+    assert.isNotNull(res);
 
     let returnedUser = await userController.findUser(newUser.id);
     assert.isNull(returnedUser);

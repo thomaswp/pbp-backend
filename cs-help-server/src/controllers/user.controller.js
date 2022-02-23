@@ -53,7 +53,7 @@ exports.findUser = (userID) => {
  * @returns deleted User
  */
 exports.deleteUser = async (userID) => {
-  let res = await User.deleteOne({ _id:userID });
+  let res = await User.findByIdAndRemove(userID);
   return res;
 };
 

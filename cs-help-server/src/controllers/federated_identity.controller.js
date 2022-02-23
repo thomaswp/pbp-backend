@@ -67,7 +67,7 @@ exports.findFederatedID = (federatedID) => {
  * @returns Promise whether delete is successful or not successful
  */
 exports.deleteFederatedID = async (internalID) => {
-  let res = await FederatedIdentity.deleteOne(
+  let res = await FederatedIdentity.findOneAndRemove(
     {
       internal_id: internalID,
     }

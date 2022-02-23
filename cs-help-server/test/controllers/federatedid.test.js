@@ -70,12 +70,11 @@ describe("FederatedID", function () {
 
   it("delete non-existent FederatedID", async function () {
     let res = await fedIDCOntroller.deleteFederatedID("ddad");
-    assert.equal(res.deletedCount, 0);
+    assert.isNull(res);
   });
 
   it("delete existing FederatedID", async function () {
     let res = await fedIDCOntroller.deleteFederatedID("3345");
-    assert.equal(res.deletedCount, 1);
-    // assert.equal(newFedId.subject, "345b");
+    assert.isNotNull(res);
   });
 });
