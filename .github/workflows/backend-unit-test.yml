@@ -7,10 +7,6 @@ on:
   pull_request:
     branches: [ backend-login ]
 
-defaults:
-  run:
-    working-directory: cs-help-server
-
 jobs:
   build:
 
@@ -27,11 +23,11 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
-    - run: rm package-lock.json && rm -rf node_modules && rm -rf ~/.node-gyp
-    - run: npm install -g node-gyp
+    - run: docker-compose -f .github/docker-compose-mongo.yml up --build
     - run: npm install
+      working-directory: cs-help-server
     - run: npm ci
-    - run: npm run build --if-present
-    - run: docker --version
+      working-directory: cs-help-server
     - run: npm run test
       working-directory: cs-help-server
+    - run: docker-compose -f .github/docker-compose-mongo.yml down --volumes
