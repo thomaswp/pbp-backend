@@ -23,7 +23,7 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
-    - run: docker-compose -f .github/docker-compose-mongo.yml up --build
+    - run: docker-compose -f .github/docker-compose-mongo.yml up --build -d
     - run: npm install
       working-directory: cs-help-server
     - run: npm ci
