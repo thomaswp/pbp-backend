@@ -28,6 +28,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: rm package-lock.json && rm -rf node_modules && rm -rf ~/.node-gyp
+    - run: sudo apt-get install cmake
     - run: npm install -g node-gyp
     - run: npm install
     - run: npm ci
