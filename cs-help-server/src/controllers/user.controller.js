@@ -58,4 +58,4 @@ exports.deleteUser = async (userID) => {
 };
 
 // Update a user data
-exports.updateUser = (user) => {};
+// exports.updateUser = (user) => {};

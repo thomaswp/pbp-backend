@@ -27,7 +27,7 @@ This is  a source code for CS-Help webapp. CS-Help is a prototype development en
    ```
 4. To delete the build to start from scratch, run the following command:
    ```
-   docker-compose down
+   docker-compose down --volumes
    ```
 
 ### Testing Setup
