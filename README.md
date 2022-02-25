@@ -29,3 +29,19 @@ This is  a source code for CS-Help webapp. CS-Help is a prototype development en
    ```
    docker-compose down
    ```
+
+### Testing Setup
+1. On the root, run Docker-Compose to create a testing database:
+   ```
+   docker-compose -f .github/docker-compose-mongo.yml up --build -d
+   ```
+2. Go to ```cs-help-server``` directory
+3. Run the unit test
+   ```
+   npm run test
+   npm run coverage
+   ```
+4. Make sure you stop the test MongoDB container by going back to the root and run the command:
+   ```
+   docker-compose -f .github/docker-compose-mongo.yml down --volumes
+   ```
