@@ -14,9 +14,13 @@ services:
       - db:/data/db
   app-backend:
     container_name: cs-help-server
+    build: ./cs-help-server
     depends_on:
       - mongodb
-    build: ./cs-help-server
+    volumes:
+      - ./cs-help-server:/cs-help-server
+      - /cs-help-server/node_modules
+    command: nodemon app.js
     restart: unless-stopped
     env_file: ./.env
     expose:
@@ -27,6 +31,8 @@ services:
       - DB_PASSWORD=$MONGODB_PASSWORD
       - DB_NAME=$MONGODB_DATABASE
       - DB_PORT=$MONGODB_DOCKER_PORT
+      - GOOGLE_ID=$GOOGLE_CLIENT_ID
+      - GOOGLE_SECRET=$GOOGLE_CLIENT_SECRET
     stdin_open: true
     tty: true
   app-frontend:
@@ -34,6 +40,9 @@ services:
     depends_on:
       - mongodb
     build: ./pbp
+    volumes:
+      - ./pbp:/cs-help-pbp
+      - /cs-help-pbp/node_modules
     restart: unless-stopped
     expose:
       - $VUE_DOCKER_PORT

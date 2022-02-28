@@ -10,6 +10,9 @@ COPY package.json .
 # Install node modules
 RUN npm install
 
+# Dev
+RUN npm install -g nodemon
+
 # Copy source code to docker
 COPY . .
 
