@@ -9,13 +9,13 @@ module.exports = {
             name: {
                 type: 'string',
                 description: "User's display name.",
-                example: 'Melody Griesen'
+                example: 'John Doe'
             },
             email: {
                 type: 'string',
                 description: "User's email address.",
                 format: 'email',
-                example: 'jvgriese@ncsu.edu'
+                example: 'jdoe@gmail.com'
             },
             projects: {
                 type: 'array',
