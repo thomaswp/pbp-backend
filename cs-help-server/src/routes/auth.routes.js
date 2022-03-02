@@ -44,7 +44,7 @@ passport.use(
         const newUser = await userController.createUser({
           name,
           email,
-          projects: [],
+          projects: {},
           templates: [],
         });
         if (!newUser) {

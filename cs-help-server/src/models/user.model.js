@@ -11,7 +11,7 @@ module.exports = (mongoose) => {
       _id: String,
       name: String,
       email: String,
-      projects: [{ name: String, id: String }],
+      projects: {},
       templates: [String],
     },
     { timestamps: true }

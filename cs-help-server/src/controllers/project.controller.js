@@ -7,20 +7,29 @@ const Project = db.projects;
  *  This method creates a new project to a user
  * @param {*} project  the project data
  */
-exports.createProject = (project) => {
+exports.createProject = (project, currentUser) => {
     if(project.name) {
-        let projname = project.name;
-        let currentUser = project.user;
 
         const newProject = new Project({
             _id: nanoid(),
-            name: projname,
-            data: {}
+            name: project.name,
+            data: {},
+            owner: project.owner
         });
+        
         const projectsaved = newProject.save();
-        currentUser.projects.push(newProject.toJSON());
+        
+        currentUser.projects[newProject._id] = project.name;
         currentUser.save();
+        
         return projectsaved;
 
     }
+    return false;
+};
+
+
+
+exports.getProject = (projectID) => {
+    return Project.findById(projectID);
 };

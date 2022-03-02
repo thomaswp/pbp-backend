@@ -1,6 +1,7 @@
 /** This model represents the Project Schema
  * ID: auto-generated ID
  * name: project name
+ * owner: this should be user's _id
  **/
 module.exports = (mongoose) => {
   let schema = mongoose.Schema(
@@ -8,6 +9,7 @@ module.exports = (mongoose) => {
       _id: String,
       name: String,
       data: {},
+      owner: String
     },
     { timestamps: true }
   );

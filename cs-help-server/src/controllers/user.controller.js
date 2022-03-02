@@ -13,7 +13,7 @@ exports.createUser = (user) => {
       _id: nanoid(),
       name: user.name,
       email: user.email,
-      projects: user.project,
+      projects: user.projects,
       templates: user.templates,
     });
     return newUser.save(newUser);

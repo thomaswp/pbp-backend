@@ -13,6 +13,7 @@ describe("FederatedID", function () {
       internal_id: "3345",
     };
     let newFedId = await fedIDCOntroller.createFederatedID(fedId);
+    // console.log(newFedId);
     assert.isNotFalse(newFedId);
   });
 
@@ -38,14 +39,23 @@ describe("FederatedID", function () {
   });
 
   it("find a valid FederatedID", async function () {
-    const fedId = {
+    const fedId2 = {
       provider: "google",
-      subject: "345b"
+      subject: "345c",
+      internal_id: "3346",
     };
-    //console.log("Trying to find Fed ID");
-    let newFedId = await fedIDCOntroller.findFederatedID(fedId);
-    //console.log("Result " + newFedId);
-    assert.equal(newFedId?.internal_id, "3345");
+    await fedIDCOntroller.createFederatedID(fedId2);
+
+
+
+    const fedIdkey = {
+      provider: "google",
+      subject: "345c"
+    };
+    // console.log("Trying to find Fed ID");
+    let newFedId = await fedIDCOntroller.findFederatedID(fedIdkey);
+    // console.log("Result " + newFedId);
+    assert.equal(newFedId?.internal_id, "3346");
   });
 
   it("find a non-existent FederatedID", async function () {
@@ -74,7 +84,14 @@ describe("FederatedID", function () {
   });
 
   it("delete existing FederatedID", async function () {
-    let res = await fedIDCOntroller.deleteFederatedID("3345");
+    const fedId3 = {
+      provider: "google",
+      subject: "345d",
+      internal_id: "3347",
+    };
+    await fedIDCOntroller.createFederatedID(fedId3);
+
+    let res = await fedIDCOntroller.deleteFederatedID("3347");
     assert.isNotNull(res);
   });
 });
