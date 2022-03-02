@@ -4,7 +4,7 @@ module.exports.mochaHooks = {
   beforeAll: async function () {
     this.timeout(60 * 10000);
     console.log("test started");
-    global.mongoUrl = `mongodb://root:123456@0.0.0.0:7017/cshelp_db_test?authSource=admin`;
+    global.mongoUrl = `mongodb://root:123456@0.0.0.0:7018/cshelp_db_test?authSource=admin`;
     db.url = global.mongoUrl;
     let dbConnectSuccess = await db.mongoose.connect(db.url, {
       useNewUrlParser: true,
@@ -30,7 +30,7 @@ module.exports.mochaHooks = {
 
   afterAll: async function () {
     await db.mongoose.disconnect();
-    console.log("Disconnected, finish unit test");
+    console.log("Closing database, unit test finished");
     process.exit();
   },
 };
