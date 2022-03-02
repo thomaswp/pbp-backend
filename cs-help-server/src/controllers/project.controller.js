@@ -1,5 +1,4 @@
 const db = require("../models");
-// const User = db.users;
 const { nanoid } = require("nanoid");
 const userController = require("./user.controller");
 const Project = db.projects;
