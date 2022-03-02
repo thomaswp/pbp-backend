@@ -16,21 +16,22 @@ This is  a source code for CS-Help webapp. CS-Help is a prototype development en
     GOOGLE_CLIENT_SECRET={YOUR GOOGLE OAUTH SECRET}
     ```
 1. Make sure you have Docker installed in your machine. The installation guide can be found [here](https://docs.docker.com/get-docker/)
-2. In your terminal, run the folllowing command:
+2. In your terminal, run the folllowing command (```--build``` is only necessary when you have code change):
    ```
    docker-compose up --build
    ```
-   To access the frontend, go to [localhost:3060](http://localhost:3060)
-3. To stop the applications, run the following command:
+   **To access the web-app, go to [localhost:3060](http://localhost:3060)**
+3. To stop the applications without deleting database, run the following command:
    ```
    docker-compose stop
    ```
-4. To delete the build to start from scratch, run the following command:
+4. To delete the build to start from scratch, run the following command (```--volumes``` if you want to wipe out the database completely):
    ```
    docker-compose down --volumes
    ```
 
 ### Testing Setup
+**Note** that you could run the development server and testing server side-by-side because the database port on both deployments are different. 
 1. On the root, run Docker-Compose to create a testing database:
    ```
    docker-compose -f .github/docker-compose-mongo.yml up --build -d
