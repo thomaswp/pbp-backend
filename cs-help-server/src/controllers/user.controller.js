@@ -16,7 +16,7 @@ exports.createUser = (user) => {
       projects: user.projects,
       templates: user.templates,
     });
-    return newUser.save(newUser);
+    return newUser.save();
   }
   return false;
 };

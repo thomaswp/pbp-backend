@@ -29,8 +29,9 @@ module.exports.mochaHooks = {
   },
 
   afterAll: async function () {
+    console.log("reached")
     await db.mongoose.disconnect();
     console.log("Closing database, unit test finished");
-    process.exit();
+    // process.exit();
   },
 };
