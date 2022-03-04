@@ -17,15 +17,9 @@ module.exports.mochaHooks = {
     console.log("Connected to the database!");
 
     // Cleanup federated db
-    db.federatedidentity.deleteMany({}, (err) => {
-      if(err)
-        console.log("Failed to delete all fedID");
-    })
+    await db.federatedidentity.deleteMany({})
     // Cleanup user db
-    db.users.deleteMany({}, (err) => {
-      if(err)
-        console.log("Failed to delete all user");
-    })
+    await db.users.deleteMany({})
   },
 
   afterAll: async function () {

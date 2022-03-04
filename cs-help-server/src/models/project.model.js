@@ -9,7 +9,11 @@ module.exports = (mongoose) => {
       _id: String,
       name: String,
       data: {},
-      owner: String
+      owner: String,
+      isArchived: {
+        type: Boolean,
+        default: false
+      }
     },
     { timestamps: true }
   );

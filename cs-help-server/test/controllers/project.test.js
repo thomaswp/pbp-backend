@@ -28,6 +28,15 @@ describe("Project controller test", function () {
         assert.isNotNull(newProject);
         expect(newProject.name).to.equal(project.name);
         expect(newProject.owner).to.equal(project.owner);
+
+        expect(newUser.projects[newProject.id]).to.equal("Test Project 1");
+        // console.log("before get")
+        // console.log(newUser);
+        newUser = await userController.findUser(newUser.id);
+        // console.log("after get");
+        // console.log(newUser);
+
+        expect(newUser.projects[newProject.id]).to.equal("Test Project 1");
     });
 
     it("create a invalid project", async function () {
@@ -70,6 +79,39 @@ describe("Project controller test", function () {
         expect(newProject.name).to.equal(retProject.name);
         expect(newProject.owner).to.equal(retProject.owner);
         expect(newProject._id).to.equal(retProject._id);
+        
+    });
+
+    it("rename a project", async function () {
+        const user = {
+            name: "JohnDoe",
+            email: "jdoe@ncsu.edu",
+            projects: {},
+            templates: ["p1_template"],
+        };
+        let newUser = await userController.createUser(user);
+        // console.log(newUser);
+
+        const project = {
+          name: "Test Project 1",
+          data: {},
+          owner: newUser._id
+        };
+
+        let newProject = await projectController.createProject(project, newUser);
+        newUser = await userController.findUser(newUser.id);
+        // console.log(newUser);
+
+
+        await projectController.renameProject(newProject, "Test2");
+        // console.log("1")
+        // console.log(newUser);
+        newUser = await userController.findUser(newUser.id);
+        // console.log("2");
+        // console.log(newUser);
+
+        expect(newProject.name).to.equal("Test2");
+        expect(newUser.projects[newProject._id]).to.equal("Test2");
         
     });
 

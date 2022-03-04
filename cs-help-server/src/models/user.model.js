@@ -11,10 +11,13 @@ module.exports = (mongoose) => {
       _id: String,
       name: String,
       email: String,
-      projects: {},
+      projects: Object,
       templates: [String],
     },
-    { timestamps: true }
+    { 
+      timestamps: true,
+      minimize: false
+    }
   );
   schema.method("toJSON", function () {
     const { __v, _id, ...object } = this.toObject();

@@ -74,11 +74,11 @@ describe("User controller test", function () {
     let newUser = await userController.createUser(user);
     // console.log("deleting user");
     let findedUser = await userController.findUser(newUser.id);
-    console.log(findedUser);
+    // console.log(findedUser);
     let res = await userController.deleteUser(newUser.id);
 
     // console.log("assering not null");
-    console.log(res);
+    // console.log(res);
     assert.isNotNull(res);
 
     // console.log("trying to find deleted user");
