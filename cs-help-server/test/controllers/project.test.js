@@ -115,4 +115,38 @@ describe("Project controller test", function () {
         
     });
 
+    it("save a project", async function() {
+        const user = {
+            name: "JohnDoe",
+            email: "jdoe@ncsu.edu",
+            projects: Object,
+            templates: ["p1_template"],
+        };
+        let newUser = await userController.createUser(user);
+        // console.log(newUser);
+
+        const project = {
+          name: "Test Project 1",
+          data: Object,
+          owner: newUser._id
+        };
+
+        let newProject = await projectController.createProject(project, newUser);
+
+        const data = {
+            text: "string"
+        }
+
+        newProject = await projectController.saveProject(newProject, data);
+        // console.log(newProject);
+        expect(newProject.data["text"]).to.equal("string");
+
+        newProject = await projectController.getProject(newProject.id);
+        // console.log(newProject);
+        expect(newProject.data["text"]).to.equal("string");
+        
+    });
+
+    
+
 });

@@ -26,19 +26,16 @@ router.post("/api/v1/projects", isLoggedIn, async (req, res) => {
 });
 
 router.put("/api/v1/projects/:id/name", isLoggedIn, async (req, res) => {
-  let id = req.params.id;
-  let project = await projectController.getProject(id);
+  let projectid = req.params.id;
+  let project = await projectController.getProject(projectid);
   if(project.owner !== req.session.passport?.user) {
     res.status(401);
     res.json({errMsg: "Cannot edit project you do not own"})
   } else {
     //updating project name in projects
-    project.name = req.body.name;
-    project.save();
-    // updating project name in user
-    let currentUser = await userController.findUser(req.session.passport?.user);
-    currentUser.projects[id] = project.name;
-    currentUser.save();
+    // project.name = req.body.name;
+    const newName = req.body.name;
+    projectController.renameProject(project, newName);
   }
 });
 
@@ -54,6 +51,19 @@ router.get("/api/v1/projects/:id", isLoggedIn, async (req, res) => {
     res.json({ errMsg: "Project Not Found"});
   } else {
     res.json(project);
+  }
+});
+
+
+router.put("/api/v1/projects/:id/data", isLoggedIn, async (req, res) => {
+  const data = req.body.data;
+  let id = req.params.id;
+  let project = await projectController.getProject(id);
+  if(project.owner !== req.session.passport?.user) {
+    res.status(401);
+    res.json({errMsg: "Cannot edit project you do not own"})
+  } else {
+    projectController.saveProject(project, data);
   }
 });
 

@@ -8,14 +8,16 @@ module.exports = (mongoose) => {
     {
       _id: String,
       name: String,
-      data: {},
+      data: Object,
       owner: String,
       isArchived: {
         type: Boolean,
         default: false
       }
     },
-    { timestamps: true }
+    { timestamps: true,
+      minimize: false 
+    }
   );
   schema.method("toJSON", function () {
     const { __v, _id, ...object } = this.toObject();

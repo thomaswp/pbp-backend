@@ -25,7 +25,6 @@ exports.createProject = async (project, currentUser) => {
         currentUser.markModified('projects');
         await currentUser.save();
         // console.log("idk")
-        // console.log(idk);
         
         return projectsaved;
 
@@ -33,17 +32,20 @@ exports.createProject = async (project, currentUser) => {
     return false;
 };
 
+
+
 exports.archiveProject = (project) => {
     project.isArchived = true;
     project.save();
     return project;
-}
+};
 
 exports.saveProject = (project, reteData) => {
     project.data = reteData;
+    project.markModified('data');
     project.save();
     return project;
-}
+};
 
 
 exports.renameProject = async (project, newName) => {
@@ -60,7 +62,7 @@ exports.renameProject = async (project, newName) => {
     // console.log(user);
     await user.save();
     return project;
-}
+};
 
 
 
