@@ -36,6 +36,7 @@ router.put("/api/v1/projects/:id/name", isLoggedIn, async (req, res) => {
     // project.name = req.body.name;
     const newName = req.body.name;
     projectController.renameProject(project, newName);
+    res.status(200);
   }
 });
 
@@ -49,6 +50,7 @@ router.put("/api/v1/projects/:id/archive", isLoggedIn, async (req, res) => {
     //updating project name in projects
     // project.name = req.body.name;
     projectController.setArchived(project, true);
+    res.status(200);
   }
 });
 
@@ -62,6 +64,7 @@ router.put("/api/v1/projects/:id/unarchive", isLoggedIn, async (req, res) => {
     //updating project name in projects
     // project.name = req.body.name;
     projectController.setArchived(project, false);
+    res.status(200);
   }
 });
 
@@ -77,6 +80,7 @@ router.get("/api/v1/projects/:id", isLoggedIn, async (req, res) => {
     res.json({ errMsg: "Project Not Found"});
   } else {
     res.json(project);
+    res.status(200);
   }
 });
 
