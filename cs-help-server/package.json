@@ -5,8 +5,10 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "test": "mocha --reporter spec ./test/**/*.js --require ./test/mongo-global-hook-plugin.js --timeout 80000 --exit",
-    "coverage": "nyc npm run test"
+    "test": "mocha --reporter spec --require ./test/mongo-global-hook-plugin.js --timeout 80000 --exit ./test/**/*.js",
+    "test-args": "mocha --reporter spec --require ./test/mongo-global-hook-plugin.js --timeout 80000 --exit",
+    "coverage": "nyc npm run test",
+    "coverage-args": "nyc npm run test-args --"
   },
   "author": "Vitus Putra",
   "license": "ISC",
