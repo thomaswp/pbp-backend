@@ -81,10 +81,10 @@ describe("Project controller test", function () {
     expect(project.owner).to.equal(project_data.owner);
 
     // test that the user ref we pass in args was updated correctly
-    expect(user.projects[project.id]).to.equal(project_data.name);
+    expect(user.projects[project.id].name).to.equal(project_data.name);
     // re-fetch user, ensure data is still good
     await user.reload();
-    expect(user.projects[project.id]).to.equal(project_data.name);
+    expect(user.projects[project.id].name).to.equal(project_data.name);
   });
 
 
@@ -171,8 +171,7 @@ describe("Project controller test", function () {
     // Test update in user
     // re-fetch user from db, ensure project name changed
     await user.reload();
-    expect(project.name).to.equal("Test2");
-    expect(user.projects[project._id]).to.equal("Test2");
+    expect(user.projects[project._id].name).to.equal("Test2");
     
   });
 
@@ -214,6 +213,7 @@ describe("Project controller test", function () {
     await setupProject();
     // ensure it starts un-archived
     expect(project.isArchived).to.be.false;
+    expect(user.projects[project.id].isArchived).to.be.false;
     
 
 
@@ -231,6 +231,9 @@ describe("Project controller test", function () {
     await project.reload();
     expect(project.isArchived).to.be.true;
     
+    // ensure project is marked in user document
+    await user.reload();
+    expect(user.projects[project.id].isArchived).to.be.true;
   });
 
   
@@ -259,6 +262,10 @@ describe("Project controller test", function () {
     await project.reload();
     expect(project.isArchived).to.be.false;
     
+    // ensure project is marked in user document
+    expect(user.projects[project.id].isArchived).to.be.false;
+    await user.reload();
+    expect(user.projects[project.id].isArchived).to.be.false;
   });
 
 });

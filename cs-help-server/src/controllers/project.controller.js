@@ -23,7 +23,10 @@ exports.createProject = async (project, currentUser) => {
     await newProject.save();
     
     // once saved, update user with new project name
-    currentUser.projects[newProject._id] = project.name;
+    currentUser.projects[newProject._id] = {
+      name: project.name,
+      isArchived: project.isArchived || false,
+    };
     currentUser.markModified('projects');
     await currentUser.save();
     
@@ -37,6 +40,12 @@ exports.setArchived = async (project, isArchived = true) => {
     // update project isArchived in its document
     project.isArchived = isArchived;
     await project.save();
+
+    // update in user document
+    const owner = await userController.findUser(project.owner);
+    owner.projects[project.id].isArchived = isArchived;
+    owner.markModified('projects');
+    await owner.save();
 
     // return modified project
     return project;
@@ -60,7 +69,7 @@ exports.renameProject = async (project, newName) => {
 
     // mark the updated project in the user document
     let user = await userController.findUser(project.owner);
-    user.projects[project._id] = project.name;
+    user.projects[project._id].name = project.name;
     user.markModified('projects');
     await user.save();
 
