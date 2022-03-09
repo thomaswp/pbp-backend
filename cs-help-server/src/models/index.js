@@ -17,14 +17,18 @@ const reloadRecord = function reloadRecord(schema) {
 mongoose.plugin(reloadRecord);
 
 
-const db = {};
-db.mongoose = mongoose;
-db.url = dbConfig.url;
+// export info for other modules to use the database
+module.exports = {
+    // export Mongoose object & config
+    mongoose: mongoose,
+    url: dbConfig.url,
 
-// return all model instances
-db.users = require("./user.model.js")(mongoose);
-db.federatedidentity = require("./federated_identity.model.js")(mongoose);
-db.projects = require("./project.model.js")(mongoose);
+    // export all Models
+    // User
+    users: require("./user.model.js")(mongoose),
+    // FederatedIdentity
+    federatedidentity: require("./federated_identity.model.js")(mongoose),
+    // Project
+    projects: require("./project.model.js")(mongoose),
+};
 
-// export db
-module.exports = db;
