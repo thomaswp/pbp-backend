@@ -39,6 +39,32 @@ router.put("/api/v1/projects/:id/name", isLoggedIn, async (req, res) => {
   }
 });
 
+router.put("/api/v1/projects/:id/archive", isLoggedIn, async (req, res) => {
+  let projectid = req.params.id;
+  let project = await projectController.getProject(projectid);
+  if(project.owner !== req.session.passport?.user) {
+    res.status(401);
+    res.json({errMsg: "Cannot archive project you do not own"});
+  } else {
+    //updating project name in projects
+    // project.name = req.body.name;
+    projectController.setArchived(project, true);
+  }
+});
+
+router.put("/api/v1/projects/:id/unarchive", isLoggedIn, async (req, res) => {
+  let projectid = req.params.id;
+  let project = await projectController.getProject(projectid);
+  if(project.owner !== req.session.passport?.user) {
+    res.status(401);
+    res.json({errMsg: "Cannot unarchive project you do not own"});
+  } else {
+    //updating project name in projects
+    // project.name = req.body.name;
+    projectController.setArchived(project, false);
+  }
+});
+
 
 /**
  * This will get the project data given the project id
@@ -61,7 +87,7 @@ router.put("/api/v1/projects/:id/data", isLoggedIn, async (req, res) => {
   let project = await projectController.getProject(id);
   if(project.owner !== req.session.passport?.user) {
     res.status(401);
-    res.json({errMsg: "Cannot edit project you do not own"})
+    res.json({errMsg: "Cannot save a project you do not own"})
   } else {
     projectController.saveProject(project, data);
   }
