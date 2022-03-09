@@ -49,8 +49,10 @@ router.put("/api/v1/projects/:id/archive", isLoggedIn, async (req, res) => {
   } else {
     //updating project name in projects
     // project.name = req.body.name;
-    projectController.setArchived(project, true);
+    const results = await projectController.setArchived(project, true);
+    res.json(results);
     res.status(200);
+    
   }
 });
 
@@ -63,7 +65,8 @@ router.put("/api/v1/projects/:id/unarchive", isLoggedIn, async (req, res) => {
   } else {
     //updating project name in projects
     // project.name = req.body.name;
-    projectController.setArchived(project, false);
+    const results = await projectController.setArchived(project, false);
+    res.json(results);
     res.status(200);
   }
 });
