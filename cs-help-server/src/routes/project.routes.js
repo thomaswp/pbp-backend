@@ -22,7 +22,7 @@ router.post("/api/v1/projects", isLoggedIn, async (req, res) => {
   };
   let returnedProject = await projectController.createProject(project, currentUser);
   console.log(returnedProject);
-  res.json(currentUser);
+  res.json(returnedProject);
 });
 
 router.put("/api/v1/projects/:id/name", isLoggedIn, async (req, res) => {
