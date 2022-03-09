@@ -36,6 +36,35 @@ router.put("/api/v1/projects/:id/name", isLoggedIn, async (req, res) => {
     // project.name = req.body.name;
     const newName = req.body.name;
     projectController.renameProject(project, newName);
+    res.status(200);
+  }
+});
+
+router.put("/api/v1/projects/:id/archive", isLoggedIn, async (req, res) => {
+  let projectid = req.params.id;
+  let project = await projectController.getProject(projectid);
+  if(project.owner !== req.session.passport?.user) {
+    res.status(401);
+    res.json({errMsg: "Cannot archive project you do not own"});
+  } else {
+    //updating project name in projects
+    // project.name = req.body.name;
+    projectController.setArchived(project, true);
+    res.status(200);
+  }
+});
+
+router.put("/api/v1/projects/:id/unarchive", isLoggedIn, async (req, res) => {
+  let projectid = req.params.id;
+  let project = await projectController.getProject(projectid);
+  if(project.owner !== req.session.passport?.user) {
+    res.status(401);
+    res.json({errMsg: "Cannot unarchive project you do not own"});
+  } else {
+    //updating project name in projects
+    // project.name = req.body.name;
+    projectController.setArchived(project, false);
+    res.status(200);
   }
 });
 
@@ -51,6 +80,7 @@ router.get("/api/v1/projects/:id", isLoggedIn, async (req, res) => {
     res.json({ errMsg: "Project Not Found"});
   } else {
     res.json(project);
+    res.status(200);
   }
 });
 
@@ -61,9 +91,10 @@ router.put("/api/v1/projects/:id/data", isLoggedIn, async (req, res) => {
   let project = await projectController.getProject(id);
   if(project.owner !== req.session.passport?.user) {
     res.status(401);
-    res.json({errMsg: "Cannot edit project you do not own"})
+    res.json({errMsg: "Cannot save a project you do not own"})
   } else {
-    projectController.saveProject(project, data);
+    await projectController.saveProject(project, data);
+    res.status(200).send();
   }
 });
 
