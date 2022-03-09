@@ -89,7 +89,8 @@ router.put("/api/v1/projects/:id/data", isLoggedIn, async (req, res) => {
     res.status(401);
     res.json({errMsg: "Cannot save a project you do not own"})
   } else {
-    projectController.saveProject(project, data);
+    await projectController.saveProject(project, data);
+    res.status(200).send();
   }
 });
 
