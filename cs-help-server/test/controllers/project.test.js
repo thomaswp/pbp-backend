@@ -41,7 +41,7 @@ describe("Project controller test", function () {
         expect(newProject.name).to.equal(project.name);
         expect(newProject.owner).to.equal(project.owner);
         // re-fecth project, ensure data is still good
-        newProject = await projectController.createProject(project, newUser);
+        await newProject.reload();
         assert.isNotNull(newProject);
         expect(newProject.name).to.equal(project.name);
         expect(newProject.owner).to.equal(project.owner);
@@ -49,7 +49,7 @@ describe("Project controller test", function () {
         // test that the user ref we pass in args was updated correctly
         expect(newUser.projects[newProject.id]).to.equal("Test Project 1");
         // re-fetch user, ensure data is still good
-        newUser = await userController.findUser(newUser.id);
+        await newUser.reload();
         expect(newUser.projects[newProject.id]).to.equal("Test Project 1");
     });
 
@@ -173,12 +173,12 @@ describe("Project controller test", function () {
         // expect that project reference passed in has changed its name
         expect(newProject.name).to.equal("Test2");
         // re-fetch project from db, ensure name is changed
-        newProject = await projectController.getProject(newProject.id);
+        await newProject.reload();
         expect(newProject.name).to.equal("Test2");
 
         // Test update in user
-        // re-fecth user from db, ensure project name changed
-        newUser = await userController.findUser(newUser.id);
+        // re-fetch user from db, ensure project name changed
+        await newUser.reload();
         expect(newProject.name).to.equal("Test2");
         expect(newUser.projects[newProject._id]).to.equal("Test2");
         
@@ -226,7 +226,7 @@ describe("Project controller test", function () {
         // ensure project ref passed in has new data
         expect(newProject.data["text"]).to.equal("string");
         // re-fetch project form db, ensure it has new data
-        newProject = await projectController.getProject(newProject.id);
+        await newProject.reload();
         expect(newProject.data["text"]).to.equal("string");
         
     });
