@@ -36,22 +36,20 @@ exports.createProject = async (project, currentUser) => {
 
 exports.archiveProject = (project) => {
     project.isArchived = true;
-    project.save();
-    return project;
+    return project.save();
 };
 
-exports.saveProject = (project, reteData) => {
+exports.saveProject = async (project, reteData) => {
     project.data = reteData;
     project.markModified('data');
-    project.save();
-    return project;
+    return project.save();
 };
 
 
 exports.renameProject = async (project, newName) => {
     // let project = Project.findById(projectID);
     project.name = newName;
-    project.save();
+    const proj_save_promise = project.save();
     // console.log(project.owner);
     let user = await userController.findUser(project.owner);
     // console.log(user);
@@ -61,7 +59,7 @@ exports.renameProject = async (project, newName) => {
     user.markModified('projects');
     // console.log(user);
     await user.save();
-    return project;
+    return proj_save_promise;
 };
 
 
