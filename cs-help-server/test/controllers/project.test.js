@@ -7,50 +7,84 @@ const userController = require("../../src/controllers/user.controller");
 describe("Project controller test", function () {
   setup();
 
-  it("create a valid project", async function () {
 
-    // SETUP
-    
-    // create user
-    const user = {
+  // TEST CONFIG
+
+  // Declare some variables used in tests
+  let user;     // user to hold projects
+  let project;  // project to create/modify
+
+  // Before each test, create a user to hold the projects
+  beforeEach("create user to hold projects", async function() {
+    const user_data = {
       name: "JohnDoe",
       email: "jdoe@ncsu.edu",
       projects: {},
       templates: ["p1_template"],
     };
-    let newUser = await userController.createUser(user);
+    user = await userController.createUser(user_data);
+  });
+  // After each, clear those vars
+  afterEach("reset user and project variables", function() {
+    user = null;
+    project = null;
+  });
+
+  // Declare a method that will setup a project
+  async function setupProject(
+    // arguments with defaults
+    name = "Test Project 1",
+    owner = user.id,
+    data = {}
+  ) {
+    // create a valid project
+    const project_data = {
+      name: name,
+      data: data,
+      owner: owner
+    };
+    project = await projectController.createProject(project_data, user);
+  }
+
+
+  // TESTS
+
+  it("create a valid project", async function () {
+
+    // SETUP
+    
 
 
 
     // ACTION
 
     // create project
-    const project = {
+    const project_data = {
       name: "Test Project 1",
       data: {},
-      owner: newUser._id
+      owner: user._id
     };
-    let newProject = await projectController.createProject(project, newUser);
+    project = await projectController.createProject(project_data, user);
 
 
 
     // RESULT
 
     // ensure return value from createProject is good
-    assert.isNotNull(newProject);
-    expect(newProject.name).to.equal(project.name);
-    expect(newProject.owner).to.equal(project.owner);
+    assert.isNotNull(project);
+    expect(project.name).to.equal(project_data.name);
+    expect(project.owner).to.equal(project_data.owner);
     // re-fecth project, ensure data is still good
-    await newProject.reload();
-    assert.isNotNull(newProject);
-    expect(newProject.name).to.equal(project.name);
-    expect(newProject.owner).to.equal(project.owner);
+    await project.reload();
+    assert.isNotNull(project);
+    expect(project.name).to.equal(project_data.name);
+    expect(project.owner).to.equal(project_data.owner);
 
     // test that the user ref we pass in args was updated correctly
-    expect(newUser.projects[newProject.id]).to.equal("Test Project 1");
+    expect(user.projects[project.id]).to.equal(project_data.name);
     // re-fetch user, ensure data is still good
-    await newUser.reload();
-    expect(newUser.projects[newProject.id]).to.equal("Test Project 1");
+    await user.reload();
+    expect(user.projects[project.id]).to.equal(project_data.name);
   });
 
 
@@ -60,34 +94,24 @@ describe("Project controller test", function () {
   it("create a invalid project", async function () {
     
     // SETUP
-    
-    // create user to hold project
-    const user = {
-      name: "JohnDoe",
-      email: "jdoe@ncsu.edu",
-      projects: {},
-      templates: ["p1_template"],
-    };
-    let newUser = await userController.createUser(user);
-
 
 
     // ACTION
 
     // create invalid project, no name
-    const project = {
+    const project_data = {
       name: "",
       data: {},
-      owner: newUser._id
+      owner: user._id
     };
-    let newProject = await projectController.createProject(project, newUser);
+    project = await projectController.createProject(project_data, user);
 
 
 
     // RESULT
 
     // project returned should not be valid
-    assert.isFalse(newProject);
+    assert.isFalse(project);
 
   });
 
@@ -98,39 +122,23 @@ describe("Project controller test", function () {
   it("find a valid project", async function () {
 
     // SETUP
-
-    // create a user for holding project
-    const user = {
-      name: "JohnDoe",
-      email: "jdoe@ncsu.edu",
-      projects: {},
-      templates: ["p1_template"],
-    };
-    let newUser = await userController.createUser(user);
-    
-    // create a valid project
-    const project = {
-      name: "Test Project 1",
-      data: {},
-      owner: newUser._id
-    };
-    let newProject = await projectController.createProject(project, newUser);
+    await setupProject();
 
 
 
     // ACTION
 
     // find project by id
-    let retProject = await projectController.getProject(newProject._id);
+    const retProject = await projectController.getProject(project.id);
 
 
 
     // RESULT
 
     // expect project data matches
-    expect(newProject.name).to.equal(retProject.name);
-    expect(newProject.owner).to.equal(retProject.owner);
-    expect(newProject._id).to.equal(retProject._id);
+    expect(retProject.name).to.equal(project.name);
+    expect(retProject.owner).to.equal(project.owner);
+    expect(retProject._id).to.equal(project._id);
   });
 
 
@@ -140,30 +148,14 @@ describe("Project controller test", function () {
   it("rename a project", async function () {
 
     // SETUP
-
-    // create a user to hold the project
-    const user = {
-      name: "JohnDoe",
-      email: "jdoe@ncsu.edu",
-      projects: {},
-      templates: ["p1_template"],
-    };
-    let newUser = await userController.createUser(user);
-
-    // create a project to rename
-    const project = {
-      name: "Test Project 1",
-      data: {},
-      owner: newUser._id
-    };
-    let newProject = await projectController.createProject(project, newUser);
+    await setupProject();
 
 
 
     // ACTION
 
     // rename the project to something else
-    await projectController.renameProject(newProject, "Test2");
+    await projectController.renameProject(project, "Test2");
 
 
 
@@ -171,16 +163,16 @@ describe("Project controller test", function () {
 
     // Test update in project
     // expect that project reference passed in has changed its name
-    expect(newProject.name).to.equal("Test2");
+    expect(project.name).to.equal("Test2");
     // re-fetch project from db, ensure name is changed
-    await newProject.reload();
-    expect(newProject.name).to.equal("Test2");
+    await project.reload();
+    expect(project.name).to.equal("Test2");
 
     // Test update in user
     // re-fetch user from db, ensure project name changed
-    await newUser.reload();
-    expect(newProject.name).to.equal("Test2");
-    expect(newUser.projects[newProject._id]).to.equal("Test2");
+    await user.reload();
+    expect(project.name).to.equal("Test2");
+    expect(user.projects[project._id]).to.equal("Test2");
     
   });
 
@@ -191,23 +183,7 @@ describe("Project controller test", function () {
   it("save a project", async function() {
     
     // SETUP
-
-    // create user to hold project
-    const user = {
-      name: "JohnDoe",
-      email: "jdoe@ncsu.edu",
-      projects: Object,
-      templates: ["p1_template"],
-    };
-    let newUser = await userController.createUser(user);
-
-    // create project to be updated
-    const project = {
-      name: "Test Project 1",
-      data: Object,
-      owner: newUser._id
-    };
-    let newProject = await projectController.createProject(project, newUser);
+    await setupProject();
     
 
 
@@ -217,17 +193,17 @@ describe("Project controller test", function () {
     const data = {
       text: "string"
     }
-    newProject = await projectController.saveProject(newProject, data);
+    await projectController.saveProject(project, data);
 
 
 
     // RESULT
 
     // ensure project ref passed in has new data
-    expect(newProject.data["text"]).to.equal("string");
+    expect(project.data["text"]).to.equal("string");
     // re-fetch project form db, ensure it has new data
-    await newProject.reload();
-    expect(newProject.data["text"]).to.equal("string");
+    await project.reload();
+    expect(project.data["text"]).to.equal("string");
     
   });
 
