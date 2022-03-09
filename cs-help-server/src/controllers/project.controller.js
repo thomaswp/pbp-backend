@@ -8,62 +8,68 @@ const Project = db.projects;
  * @param {*} project  the project data
  */
 exports.createProject = async (project, currentUser) => {
-    if(project.name) {
-
-        const newProject = new Project({
-            _id: nanoid(),
-            name: project.name,
-            data: {},
-            owner: project.owner
-        });
-        
-        const projectsaved = newProject.save();
-        
-        currentUser.projects[newProject._id] = project.name;
-        // console.log("in created")
-        // console.log(currentUser);
-        currentUser.markModified('projects');
-        await currentUser.save();
-        // console.log("idk")
-        
-        return projectsaved;
-
+    // error check - must have project name
+    if(!project.name) {
+        return false;
     }
-    return false;
+
+    // create and save new project
+    const newProject = new Project({
+        _id: nanoid(),
+        name: project.name,
+        data: {},
+        owner: project.owner
+    });
+    await newProject.save();
+    
+    // once saved, update user with new project name
+    currentUser.projects[newProject._id] = project.name;
+    currentUser.markModified('projects');
+    await currentUser.save();
+    
+    // return the new project
+    return newProject;
 };
 
 
 
-exports.archiveProject = (project) => {
-    project.isArchived = true;
-    return project.save();
+exports.setArchived = async (project, isArchived = true) => {
+    // update project isArchived in its document
+    project.isArchived = isArchived;
+    await project.save();
+
+    // return modified project
+    return project;
 };
 
 exports.saveProject = async (project, reteData) => {
+    // update project data in its document
     project.data = reteData;
     project.markModified('data');
-    return project.save();
+    await project.save();
+
+    // return modified project
+    return project;
 };
 
 
 exports.renameProject = async (project, newName) => {
-    // let project = Project.findById(projectID);
+    // update project name in its own doecument
     project.name = newName;
-    const proj_save_promise = project.save();
-    // console.log(project.owner);
+    await project.save();
+
+    // mark the updated project in the user document
     let user = await userController.findUser(project.owner);
-    // console.log(user);
-    // console.log("PROJECTS: " + user.projects);
     user.projects[project._id] = project.name;
-    
     user.markModified('projects');
-    // console.log(user);
     await user.save();
-    return proj_save_promise;
+
+    // return modified project
+    return project;
 };
 
 
 
-exports.getProject = (projectID) => {
-    return Project.findById(projectID);
+exports.getProject = async (projectID) => {
+    return await Project.findById(projectID);
 };
