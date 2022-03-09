@@ -77,7 +77,7 @@ usage() {
 \n\
   TEST_FILES:\n\
     argument list of specific test files to run\n\
-    note: will still run beforeAll/beforeEach/... hooks
+    note: will run beforeAll/beforeEach when test file \`require()\`s them\n\
 
 examples:\n\
   ./run_tests.sh\n\
