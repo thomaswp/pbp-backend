@@ -207,6 +207,58 @@ describe("Project controller test", function () {
     
   });
 
+
+  it("archive a project", async function() {
+    
+    // SETUP
+    await setupProject();
+    // ensure it starts un-archived
+    expect(project.isArchived).to.be.false;
+    
+
+
+    // ACTION
+
+    // Archive the project
+    await projectController.setArchived(project);
+
+
+
+    // RESULT
+
+    // enure project is archived before and after refresh
+    expect(project.isArchived).to.be.true;
+    await project.reload();
+    expect(project.isArchived).to.be.true;
+    
+  });
+
   
+  it("un-archive a project", async function() {
+    
+    // SETUP
+    await setupProject();
+    // archive it
+    await projectController.setArchived(project);
+    // ensure it starts archived
+    expect(project.isArchived).to.be.true;
+    
+
+
+    // ACTION
+
+    // Un-archive the project
+    await projectController.setArchived(project, false);
+
+
+
+    // RESULT
+
+    // enure project is not archived before and after refresh
+    expect(project.isArchived).to.be.false;
+    await project.reload();
+    expect(project.isArchived).to.be.false;
+    
+  });
 
 });
