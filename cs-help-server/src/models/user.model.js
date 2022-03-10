@@ -14,9 +14,9 @@ module.exports = (mongoose) => {
       projects: Object,
       templates: [String],
     },
-    { 
+    {
       timestamps: true,
-      minimize: false
+      minimize: false,
     }
   );
   schema.method("toJSON", function () {

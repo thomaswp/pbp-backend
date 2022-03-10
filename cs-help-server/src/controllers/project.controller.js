@@ -8,77 +8,72 @@ const Project = db.projects;
  * @param {*} project  the project data
  */
 exports.createProject = async (project, currentUser) => {
-    // error check - must have project name
-    if(!project.name) {
-        return false;
-    }
+  // error check - must have project name
+  if (!project.name) {
+    return false;
+  }
 
-    // create and save new project
-    const newProject = new Project({
-        _id: nanoid(),
-        name: project.name,
-        data: {},
-        owner: project.owner
-    });
-    await newProject.save();
-    
-    // once saved, update user with new project name
-    currentUser.projects[newProject._id] = {
-      name: project.name,
-      isArchived: project.isArchived || false,
-    };
-    currentUser.markModified('projects');
-    await currentUser.save();
-    
-    // return the new project
-    return newProject;
+  // create and save new project
+  const newProject = new Project({
+    _id: nanoid(),
+    name: project.name,
+    data: {},
+    owner: project.owner,
+  });
+  await newProject.save();
+
+  // once saved, update user with new project name
+  currentUser.projects[newProject._id] = {
+    name: project.name,
+    isArchived: project.isArchived || false,
+  };
+  currentUser.markModified("projects");
+  await currentUser.save();
+
+  // return the new project
+  return newProject;
 };
 
-
-
 exports.setArchived = async (project, isArchived = true) => {
-    // update project isArchived in its document
-    project.isArchived = isArchived;
-    await project.save();
+  // update project isArchived in its document
+  project.isArchived = isArchived;
+  await project.save();
 
-    // update in user document
-    const owner = await userController.findUser(project.owner);
-    owner.projects[project.id].isArchived = isArchived;
-    owner.markModified('projects');
-    await owner.save();
+  // update in user document
+  const owner = await userController.findUser(project.owner);
+  owner.projects[project.id].isArchived = isArchived;
+  owner.markModified("projects");
+  await owner.save();
 
-    // return modified project
-    return project;
+  // return modified project
+  return project;
 };
 
 exports.saveProject = async (project, reteData) => {
-    // update project data in its document
-    project.data = reteData;
-    project.markModified('data');
-    await project.save();
+  // update project data in its document
+  project.data = reteData;
+  project.markModified("data");
+  await project.save();
 
-    // return modified project
-    return project;
+  // return modified project
+  return project;
 };
-
 
 exports.renameProject = async (project, newName) => {
-    // update project name in its own doecument
-    project.name = newName;
-    await project.save();
+  // update project name in its own doecument
+  project.name = newName;
+  await project.save();
 
-    // mark the updated project in the user document
-    let user = await userController.findUser(project.owner);
-    user.projects[project._id].name = project.name;
-    user.markModified('projects');
-    await user.save();
+  // mark the updated project in the user document
+  let user = await userController.findUser(project.owner);
+  user.projects[project._id].name = project.name;
+  user.markModified("projects");
+  await user.save();
 
-    // return modified project
-    return project;
+  // return modified project
+  return project;
 };
 
-
-
 exports.getProject = async (projectID) => {
-    return await Project.findById(projectID);
+  return await Project.findById(projectID);
 };

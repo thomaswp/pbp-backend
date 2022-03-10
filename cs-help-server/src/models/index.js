@@ -8,27 +8,25 @@ mongoose.Promise = global.Promise;
 // taken from:
 // https://github.com/Automattic/mongoose/issues/7781#issuecomment-929101197
 const reloadRecord = function reloadRecord(schema) {
-  schema.methods.reload = async function() {
-    const record = await this.constructor.findById(this); 
+  schema.methods.reload = async function () {
+    const record = await this.constructor.findById(this);
     Object.assign(this, record);
     return record;
-  }
-}
+  };
+};
 mongoose.plugin(reloadRecord);
-
 
 // export info for other modules to use the database
 module.exports = {
-    // export Mongoose object & config
-    mongoose: mongoose,
-    url: dbConfig.url,
+  // export Mongoose object & config
+  mongoose: mongoose,
+  url: dbConfig.url,
 
-    // export all Models
-    // User
-    users: require("./user.model.js")(mongoose),
-    // FederatedIdentity
-    federatedidentity: require("./federated_identity.model.js")(mongoose),
-    // Project
-    projects: require("./project.model.js")(mongoose),
+  // export all Models
+  // User
+  users: require("./user.model.js")(mongoose),
+  // FederatedIdentity
+  federatedidentity: require("./federated_identity.model.js")(mongoose),
+  // Project
+  projects: require("./project.model.js")(mongoose),
 };
-

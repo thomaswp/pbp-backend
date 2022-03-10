@@ -12,12 +12,12 @@ module.exports = (mongoose) => {
       owner: String,
       isArchived: {
         type: Boolean,
-        default: false
-      }
+        default: false,
+      },
     },
     {
       timestamps: true,
-      minimize: false 
+      minimize: false,
     }
   );
   schema.method("toJSON", function () {
