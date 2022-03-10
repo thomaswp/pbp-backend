@@ -34,6 +34,7 @@ router.get("/api/v1/user", isLoggedIn, async (req, res) => {
     res.status(500);
     res.json({ errMesg: "Not Found" });
   } else {
+    res.status(200);
     res.json(currentUser);
   }
 });

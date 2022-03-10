@@ -25,6 +25,7 @@ router.post("/api/v1/projects", isLoggedIn, async (req, res) => {
     currentUser
   );
   console.log(returnedProject);
+  res.status(201);
   res.json(returnedProject);
 });
 
@@ -38,8 +39,12 @@ router.put("/api/v1/projects/:id/name", isLoggedIn, async (req, res) => {
     //updating project name in projects
     // project.name = req.body.name;
     const newName = req.body.name;
-    projectController.renameProject(project, newName);
+    let updatedProject = await projectController.renameProject(
+      project,
+      newName
+    );
     res.status(200);
+    res.json(updatedProject);
   }
 });
 
@@ -53,8 +58,8 @@ router.put("/api/v1/projects/:id/archive", isLoggedIn, async (req, res) => {
     //updating project name in projects
     // project.name = req.body.name;
     const results = await projectController.setArchived(project, true);
-    res.json(results);
     res.status(200);
+    res.json(results);
   }
 });
 
@@ -68,8 +73,8 @@ router.put("/api/v1/projects/:id/unarchive", isLoggedIn, async (req, res) => {
     //updating project name in projects
     // project.name = req.body.name;
     const results = await projectController.setArchived(project, false);
-    res.json(results);
     res.status(200);
+    res.json(results);
   }
 });
 
@@ -83,8 +88,8 @@ router.get("/api/v1/projects/:id", isLoggedIn, async (req, res) => {
     res.status(404);
     res.json({ errMsg: "Project Not Found" });
   } else {
-    res.json(project);
     res.status(200);
+    res.json(project);
   }
 });
 
