@@ -35,6 +35,9 @@ router.put("/api/v1/projects/:id/name", isLoggedIn, async (req, res) => {
   if (project.owner !== req.session.passport?.user) {
     res.status(401);
     res.json({ errMsg: "Cannot edit project you do not own" });
+  } else if(req.body.name === "" ) {
+    res.status(500);
+    res.json({ errMsg: "Name cannot be empty" });
   } else {
     //updating project name in projects
     // project.name = req.body.name;
