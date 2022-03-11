@@ -1,19 +1,18 @@
 /**
  * Router to handle User-focused request
- *
+ * Contains API routes for User
  */
 const express = require("express");
-const ensureLogIn = require("connect-ensure-login").ensureLoggedIn;
 const userController = require("../controllers/user.controller");
+const isLoggedIn = require("../middleware/ensureLoggedIn");
 let router = express.Router();
-let ensureLoggedIn = ensureLogIn();
 
 /**
  * API used to test get user
  * url: GET /api/v1/users/:id
  * returns: passed ID
  */
-router.get("/api/v1/users/:id", ensureLoggedIn, (req, res) => {
+router.get("/api/v1/users/:id", isLoggedIn, (req, res) => {
   let id = req.params.id;
   let sampleUser = {
     name: "John Doe " + id,
@@ -28,13 +27,14 @@ router.get("/api/v1/users/:id", ensureLoggedIn, (req, res) => {
  * url: GET /api/v1/user
  * returns: User record
  */
-router.get("/api/v1/user", async (req, res) => {
+router.get("/api/v1/user", isLoggedIn, async (req, res) => {
   let currentUser = await userController.findUser(req.session.passport?.user);
   console.log(`GET /api/v1/user current user: ${currentUser}`);
   if (!currentUser) {
-    res.status(401);
-    res.json({errMesg: "Unauthenticated"});
+    res.status(500);
+    res.json({ errMesg: "Not Found" });
   } else {
+    res.status(200);
     res.json(currentUser);
   }
 });

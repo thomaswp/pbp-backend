@@ -26,12 +26,9 @@ exports.createFederatedID = (federatedID) => {
  * @returns FederatedIdentity {provider, subject, internal_id}
  */
 exports.findFederatedID = (federatedID) => {
-  // console.log(
-  //   `findFederatedID: ${federatedID.provider}, ${federatedID.subject}`
-  // );
   return FederatedIdentity.findById({
-      provider: federatedID?.provider,
-      subject: federatedID?.subject
+    provider: federatedID?.provider,
+    subject: federatedID?.subject,
   });
 };
 
@@ -67,10 +64,8 @@ exports.findFederatedID = (federatedID) => {
  * @returns Promise whether delete is successful or not successful
  */
 exports.deleteFederatedID = async (internalID) => {
-  let res = await FederatedIdentity.findOneAndRemove(
-    {
-      internal_id: internalID,
-    }
-  );
+  let res = await FederatedIdentity.findOneAndRemove({
+    internal_id: internalID,
+  });
   return res;
 };

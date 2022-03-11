@@ -63,19 +63,31 @@ describe("User controller test", function () {
   });
 
   it("delete valid user", async function () {
+    // console.log("starting test");
     const user = {
       name: "Marshal Lannes",
       email: "mlannes@ncsu.edu",
       projects: [{ name: "p1", id: "0" }],
       templates: ["p1_template"],
     };
-    newUser = await userController.createUser(user);
+    // console.log("creating user");
+    let newUser = await userController.createUser(user);
+    // console.log("deleting user");
+    let findedUser = await userController.findUser(newUser.id);
+    // console.log(findedUser);
     let res = await userController.deleteUser(newUser.id);
+
+    // console.log("assering not null");
+    // console.log(res);
     assert.isNotNull(res);
 
+    // console.log("trying to find deleted user");
     let returnedUser = await userController.findUser(newUser.id);
+
+    // console.log("asserting that is null");
     assert.isNull(returnedUser);
 
+    
   });
 
 

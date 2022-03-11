@@ -1,11 +1,11 @@
 version: "3.8"
 services:
   mongodb:
-    container_name: cs-help-mongodb
+    container_name: cs-help-mongodb-test
     image: mongo:5.0.6
     restart: unless-stopped
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=123456
     ports:
-      - 7017:27017
+      - 7018:27017

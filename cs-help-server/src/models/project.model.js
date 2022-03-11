@@ -1,18 +1,19 @@
-/** This model represents the User Schema
+/** This model represents the Project Schema
  * ID: auto-generated ID
- * name: user name
- * email: user email
- * projects: List of project identifier
- * templates: list of project templates
- * */
+ * name: project name
+ * owner: this should be user's _id
+ **/
 module.exports = (mongoose) => {
   let schema = mongoose.Schema(
     {
       _id: String,
       name: String,
-      email: String,
-      projects: Object,
-      templates: [String],
+      data: Object,
+      owner: String,
+      isArchived: {
+        type: Boolean,
+        default: false,
+      },
     },
     {
       timestamps: true,
@@ -24,6 +25,6 @@ module.exports = (mongoose) => {
     object.id = _id;
     return object;
   });
-  const User = mongoose.model("user", schema);
-  return User;
+  const Project = mongoose.model("project", schema);
+  return Project;
 };

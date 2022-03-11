@@ -44,7 +44,7 @@ passport.use(
         const newUser = await userController.createUser({
           name,
           email,
-          projects: [],
+          projects: {},
           templates: [],
         });
         if (!newUser) {
@@ -75,7 +75,7 @@ passport.use(
           console.log(
             `Something went wrong, user does not exist but federated ID exist. Check DB!`
           );
-          return done(null, false, {
+          return cb(null, false, {
             message: `Something went wrong when finding existing user`,
           });
         }
