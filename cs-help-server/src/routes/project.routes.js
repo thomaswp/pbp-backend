@@ -1,5 +1,5 @@
 /**
- * Router to handle project-focused request
+ * Router to handle Project and Assignment request
  *
  */
 const express = require("express");
@@ -29,6 +29,11 @@ router.post("/api/v1/projects", isLoggedIn, async (req, res) => {
   res.json(returnedProject);
 });
 
+/**
+ * API used to update project name
+ * url: PUT /api/v1/project/:id/name
+ * returns: newly updated project
+ */
 router.put("/api/v1/projects/:id/name", isLoggedIn, async (req, res) => {
   let projectid = req.params.id;
   let project = await projectController.getProject(projectid);
@@ -51,6 +56,11 @@ router.put("/api/v1/projects/:id/name", isLoggedIn, async (req, res) => {
   }
 });
 
+/**
+ * API used to archive a project
+ * url: PUT /api/v1/projects/:id/archive
+ * returns: newly archived project
+ */
 router.put("/api/v1/projects/:id/archive", isLoggedIn, async (req, res) => {
   let projectid = req.params.id;
   let project = await projectController.getProject(projectid);
@@ -66,6 +76,11 @@ router.put("/api/v1/projects/:id/archive", isLoggedIn, async (req, res) => {
   }
 });
 
+/**
+ * API used to unarchive a project
+ * url: PUT /api/v1/projects/:id/unarchive
+ * returns: newly unarchived project
+ */
 router.put("/api/v1/projects/:id/unarchive", isLoggedIn, async (req, res) => {
   let projectid = req.params.id;
   let project = await projectController.getProject(projectid);
@@ -82,7 +97,9 @@ router.put("/api/v1/projects/:id/unarchive", isLoggedIn, async (req, res) => {
 });
 
 /**
- * This will get the project data given the project id
+ * API used to get a project by id
+ * url: GET /api/v1/projects/:id
+ * returns: project with matching id
  */
 router.get("/api/v1/projects/:id", isLoggedIn, async (req, res) => {
   let id = req.params.id;
@@ -96,6 +113,11 @@ router.get("/api/v1/projects/:id", isLoggedIn, async (req, res) => {
   }
 });
 
+/**
+ * API used to update a project by id
+ * url: PUT /api/v1/projects/:id/data
+ * returns: newly updated project
+ */
 router.put("/api/v1/projects/:id/data", isLoggedIn, async (req, res) => {
   const data = req.body.data;
   let id = req.params.id;

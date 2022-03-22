@@ -34,6 +34,12 @@ exports.createProject = async (project, currentUser) => {
   return newProject;
 };
 
+/**
+ * Method to archive a project
+ * @param {*} project project data
+ * @param {*} isArchived is archived
+ * @returns updated project
+ */
 exports.setArchived = async (project, isArchived = true) => {
   // update project isArchived in its document
   project.isArchived = isArchived;
@@ -49,6 +55,12 @@ exports.setArchived = async (project, isArchived = true) => {
   return project;
 };
 
+/**
+ * Save a project with the rete data
+ * @param {*} project target project
+ * @param {*} reteData rete data
+ * @returns newly saved project
+ */
 exports.saveProject = async (project, reteData) => {
   // update project data in its document
   project.data = reteData;
@@ -59,6 +71,12 @@ exports.saveProject = async (project, reteData) => {
   return project;
 };
 
+/**
+ * Rename a project
+ * @param {*} project target project
+ * @param {*} newName ew project name
+ * @returns newly renamed project
+ */
 exports.renameProject = async (project, newName) => {
   // update project name in its own doecument
   project.name = newName;
@@ -74,6 +92,11 @@ exports.renameProject = async (project, newName) => {
   return project;
 };
 
+/**
+ * Get project by id
+ * @param {*} projectID project ID 
+ * @returns project that matches with the ID
+ */
 exports.getProject = async (projectID) => {
   return await Project.findById(projectID);
 };
