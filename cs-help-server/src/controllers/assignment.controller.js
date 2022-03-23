@@ -34,6 +34,14 @@ exports.getAssignment = async (assignmentID) => {
 };
 
 /**
+ * Get all assignment in the database
+ * @returns List of all assignment
+ */
+exports.getAllAssignments = async () => {
+  return await Assignment.find({});
+}
+
+/**
  * Open assignment adn do checking of what to do
  * CREATE: If the assignment does not have user ID and project associated with it
  * OPEN: If the assignment does have user ID and project associated with it
