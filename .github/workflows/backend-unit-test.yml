@@ -1,0 +1,42 @@
+
+name: CS-Help backend unit-test
+
+on:
+  push:
+    branches: [ backend-login ]
+  pull_request:
+    branches: [ backend-login ]
+
+jobs:
+  build:
+
+    runs-on: global
+
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Clean up previous MongoDB
+      run: docker-compose -f .github/docker-compose-mongo.yml down --volumes
+    - name: Build and run MongoDB
+      run: docker-compose -f .github/docker-compose-mongo.yml up --build
+    - name: Install dependency
+      run: npm install
+      working-directory: cs-help-server
+    - name: Check for dependency problem
+      run: npm ci
+      working-directory: cs-help-server
+    - name: Run unit tests
+      run: npm run test
+      working-directory: cs-help-server
+    - name: Check that MongoDB is running
+      run: docker ps
+    - name: Stop MongoDB
+      run: docker-compose -f .github/docker-compose-mongo.yml down --volumes

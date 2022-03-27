@@ -5,13 +5,33 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "test:unit": "mocha"
+    "test": "mocha --reporter spec --require ./test/mongo-global-hook-plugin.js --timeout 80000 --exit ./test/**/*.js",
+    "test-args": "mocha --reporter spec --require ./test/mongo-global-hook-plugin.js --timeout 80000 --exit",
+    "coverage": "nyc npm run test",
+    "coverage-args": "nyc npm run test-args --"
   },
   "author": "Vitus Putra",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.19.1",
     "chai": "^4.3.6",
+    "connect-ensure-login": "^0.1.1",
+    "connect-mongodb-session": "^3.1.1",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^10.0.0",
     "express": "^4.17.2",
-    "mocha": "^9.2.0"
+    "express-session": "^1.17.2",
+    "http-errors": "^1.8.1",
+    "mocha": "^9.2.0",
+    "mongoose": "^6.2.1",
+    "nanoid": "^3.3.1",
+    "passport": "^0.5.2",
+    "passport-google-oauth20": "^2.0.0",
+    "swagger-ui-express": "^4.3.0"
+  },
+  "devDependencies": {
+    "expect": "^27.5.1",
+    "nyc": "^15.1.0",
+    "testcontainers": "^8.2.0"
   }
 }
