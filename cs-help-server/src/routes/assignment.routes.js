@@ -6,7 +6,7 @@ const express = require("express");
 let router = express.Router();
 const userController = require("../controllers/user.controller");
 const assignmentController = require("../controllers/assignment.controller");
-const isLoggedIn = require("../middleware/ensureLoggedIn");
+const { isLoggedIn } = require("../middleware/ensureLoggedIn");
 const { logger } = require("../config/logger.config");
 
 /**

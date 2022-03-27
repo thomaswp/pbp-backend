@@ -4,8 +4,8 @@
  */
 const express = require("express");
 const userController = require("../controllers/user.controller");
-const isLoggedIn = require("../middleware/ensureLoggedIn");
-const {logger} = require("../config/logger.config");
+const { isLoggedIn } = require("../middleware/ensureLoggedIn");
+const { logger } = require("../config/logger.config");
 let router = express.Router();
 
 /**
