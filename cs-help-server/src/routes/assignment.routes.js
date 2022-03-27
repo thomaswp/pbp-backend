@@ -5,9 +5,9 @@
 const express = require("express");
 let router = express.Router();
 const userController = require("../controllers/user.controller");
-const projectController = require("../controllers/project.controller");
 const assignmentController = require("../controllers/assignment.controller");
 const isLoggedIn = require("../middleware/ensureLoggedIn");
+const { logger } = require("../config/logger.config");
 
 /**
  * API used to create/open/unarchive new project from assignment
@@ -17,21 +17,30 @@ const isLoggedIn = require("../middleware/ensureLoggedIn");
  * url: POST /api/v1/assignment
  * returns: newly created project
  */
-router.post("/api/v1/assignment", isLoggedIn, async (req, res) => {
+router.post("/api/v1/assignment/:id", isLoggedIn, async (req, res) => {
   let currentAssignment = await assignmentController.getAssignment(
-    req.body.assignmentID
+    req.params.id
   );
   let currentUser = await userController.findUser(req.session.passport?.user);
-
+  logger.debug(
+    `POST /api/v1/assignment/:id create project from assignment ${currentAssignment}`
+  );
   const projectID = assignmentController.openAssignment(
     currentAssignment,
     currentUser
   );
   if (!projectID) {
+    logger.error(
+      `POST /api/v1/assignment/:id 400 error cannot create project from assignment`
+    );
     res
       .status(400)
       .json({ errMsg: "Failed to open the project from assignment." });
   }
+  logger.debug(
+    `POST /api/v1/assignment/:id new project id from assignment: ${projectID}`
+  );
+  logger.info(`POST /api/v1/assignment/:id 200 success`);
   res.status(201);
   res.json({ projectID: projectID });
 });
@@ -40,12 +49,34 @@ router.post("/api/v1/assignment", isLoggedIn, async (req, res) => {
  * Development API to populate assignment schema with examples
  */
 router.post("/api/v1/insertassignments", isLoggedIn, async (req, res) => {
-  let createdAssignment = await assignmentController.createAssignment({name: req.body.name, data: req.body.data});
-  if(!createdAssignment) {
-    res
-      .status(400)
-      .json({ errMsg: "Failed to create an assignment" });
+  let createdAssignment = await assignmentController.createAssignment({
+    name: req.body.name,
+    data: req.body.data,
+  });
+  console.log(
+    `POST /api/v1/insertassignments all assignment: ${createdAssignment}`
+  );
+  if (!createdAssignment) {
+    res.status(400).json({ errMsg: "Failed to create an assignment" });
   }
   res.status(201);
   res.json(createdAssignment);
+});
+
+/**
+ * API used to get all assignments
+ * url: GET /api/v1/assignment
+ * returns: Assignment record
+ */
+router.get("/api/v1/assignment", isLoggedIn, async (req, res) => {
+  let assignmentList = await assignmentController.getAllAssignments();
+  logger.debug(`GET /api/v1/assignment all assignment: ${assignmentList}`);
+  if (!assignmentList) {
+    res.status(500);
+    res.json({ errMesg: "Not Found" });
+  } else {
+    logger.info(`GET /api/v1/assignment 200 success`);
+    res.status(200);
+    res.json(assignmentList);
+  }
 });

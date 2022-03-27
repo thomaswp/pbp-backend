@@ -5,6 +5,7 @@
 const express = require("express");
 const userController = require("../controllers/user.controller");
 const isLoggedIn = require("../middleware/ensureLoggedIn");
+const {logger} = require("../config/logger.config");
 let router = express.Router();
 
 /**
@@ -29,11 +30,13 @@ router.get("/api/v1/users/:id", isLoggedIn, (req, res) => {
  */
 router.get("/api/v1/user", isLoggedIn, async (req, res) => {
   let currentUser = await userController.findUser(req.session.passport?.user);
-  console.log(`GET /api/v1/user current user: ${currentUser}`);
+  logger.debug(`GET /api/v1/user current user: \n${currentUser}`);
   if (!currentUser) {
+    logger.error(`GET /api/v1/user 500 not found`);
     res.status(500);
     res.json({ errMesg: "Not Found" });
   } else {
+    logger.info(`GET /api/v1/user 200 success`);
     res.status(200);
     res.json(currentUser);
   }
