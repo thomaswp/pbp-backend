@@ -48,16 +48,16 @@ router.post("/api/v1/assignment/:id", isLoggedIn, async (req, res) => {
 /**
  * Development API to populate assignment schema with examples
  */
-router.post("/api/v1/insertassignments", isLoggedIn, async (req, res) => {
+router.post("/api/v1/insert/assignments", isLoggedIn, async (req, res) => {
   let createdAssignment = await assignmentController.createAssignment({
     name: req.body.name,
     data: req.body.data,
   });
-  console.log(
+  logger.debug(
     `POST /api/v1/insertassignments all assignment: ${createdAssignment}`
   );
   if (!createdAssignment) {
-    res.status(400).json({ errMsg: "Failed to create an assignment" });
+    res.status(500).json({ errMsg: "Failed to create an assignment" });
   }
   res.status(201);
   res.json(createdAssignment);
@@ -80,3 +80,5 @@ router.get("/api/v1/assignment", isLoggedIn, async (req, res) => {
     res.json(assignmentList);
   }
 });
+
+module.exports = router;

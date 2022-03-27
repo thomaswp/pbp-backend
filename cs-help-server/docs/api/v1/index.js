@@ -5,6 +5,7 @@ const components = require('./components');
 const tags = require('./tags');
 // Import endpoints from specific categories
 const users = require('./users');
+const assignments = require('./assignments')
 
 // spread all of these modules into a single object containing all API docs
 module.exports = {
@@ -12,5 +13,8 @@ module.exports = {
     ...servers,
     ...components,
     ...tags,
-    ...users
+    paths: {
+        ...users,
+        ...assignments
+    }
 };

@@ -1,15 +1,9 @@
-const getUser = require('./get-user');
+const getUser = require("./get-user");
 
 module.exports = {
-    paths:{
-        // '/users':{
-        //     ...getUsers,
-        //     ...createUser
-        // },
-        '/users/{id}':{
-            // ...updateUser,
-            // ...deleteUser,
-            ...getUser
-        }
-    }
-}
+  "/users/{id}": {
+    // ...updateUser,
+    // ...deleteUser,
+    ...getUser,
+  },
+};

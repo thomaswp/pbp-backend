@@ -1,5 +1,6 @@
 // import schemas from each part of the API docs
 const userSchemas = require('./users/user.schemas.js')
+const assignmentSchemas = require('./assignments/assignment.schemas.js')
 
 module.exports = {
     components:{
@@ -37,7 +38,8 @@ module.exports = {
                     }
                 }
             },
-            ...userSchemas
+            ...userSchemas,
+            ...assignmentSchemas,
         }
     }
 }
