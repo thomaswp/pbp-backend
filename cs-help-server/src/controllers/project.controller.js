@@ -17,7 +17,7 @@ exports.createProject = async (project, currentUser) => {
   const newProject = new Project({
     _id: nanoid(),
     name: project.name,
-    data: project.data,
+    data: project.data || {},
     owner: project.owner,
   });
   await newProject.save();

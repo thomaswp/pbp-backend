@@ -20,6 +20,26 @@ describe("User controller test", function () {
     expect(newUser.email).to.equal(user.email);
   });
 
+  it("create a valid user with undefined projects", async function () {
+    const user = {
+      name: "JohnDoe",
+      email: "jdoe@ncsu.edu",
+      templates: ["p1_template"],
+    };
+    newUser = await userController.createUser(user);
+    assert.isNotNull(newUser)
+    expect(newUser.name).to.equal(user.name);
+    expect(newUser.email).to.equal(user.email);
+    newUser.projects["01"] = {
+      name: "Leeroy",
+      isArchived: false,
+    };
+    newUser.markModified("projects");
+    await newUser.save();
+    newUser = await userController.findUser(newUser.id);
+    assert.isNotNull(newUser.projects);
+  });
+
   it("create an invalid user", async function () {
     let user = {
       email: "jdoe@ncsu.edu",
