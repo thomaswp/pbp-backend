@@ -25,9 +25,9 @@ router.post("/api/v1/assignment/:id", isLoggedIn, async (req, res) => {
   logger.debug(
     `POST /api/v1/assignment/:id create project from assignment ${currentAssignment}`
   );
-  const projectID = assignmentController.openAssignment(
+  const projectID = await assignmentController.openAssignment(
     currentAssignment,
-    currentUser
+    currentUser._id
   );
   if (!projectID) {
     logger.error(
@@ -48,15 +48,15 @@ router.post("/api/v1/assignment/:id", isLoggedIn, async (req, res) => {
 /**
  * Development API to populate assignment schema with examples
  */
-router.post("/api/v1/insert/assignments", isLoggedIn, async (req, res) => {
-  let createdAssignment = await assignmentController.createAssignment({
-    name: req.body.name,
-    data: req.body.data,
-  });
+router.post("/api/v1/insert/:projectID", isLoggedIn, async (req, res) => {
+  let createdAssignment = await assignmentController.createAssignment(
+    req.params.projectID
+  );
   logger.debug(
-    `POST /api/v1/insertassignments all assignment: ${createdAssignment}`
+    `POST /api/v1/insert/:projectID create assignment: ${createdAssignment}`
   );
   if (!createdAssignment) {
+    logger.error(`POST /api/v1/insert/:projectID 500 failure`);
     res.status(500).json({ errMsg: "Failed to create an assignment" });
   }
   res.status(201);

@@ -1,24 +1,30 @@
 const db = require("../models");
 const { nanoid } = require("nanoid");
 const projectController = require("./project.controller");
+const userController = require("./user.controller");
 const Assignment = db.assignments;
 
 /**
- *  This method creates a new assignment
- * @param {*} assignment  the assignment data
+ * This method creates a new assignment by setting the project isAssignment to true
+ * @param {*} projectID  the project ID
  */
-exports.createAssignment = async (assignment) => {
-  // error check - must have project name
-  if (!assignment.name) {
+exports.createAssignment = async (projectID) => {
+  // error check - must have project name and isAssignment should be false
+  let project = await projectController.getProject(projectID);
+  if (!project || project.isAssignment) {
     return false;
   }
-  // create and save new project
+  // Update project isAssignment properties
+  project.isAssignment = true;
+  await project.save();
+  // create and save new Assignment
   const newAssignment = new Assignment({
     _id: nanoid(),
-    name: assignment.name,
-    data: assignment.data,
+    name: project.name,
+    projectId: project._id,
     copies: {},
   });
+  newAssignment.copies[project.owner] = project._id;
   await newAssignment.save();
   // return the new project
   return newAssignment;
@@ -39,19 +45,34 @@ exports.getAssignment = async (assignmentID) => {
  */
 exports.getAllAssignments = async () => {
   return await Assignment.find({});
-}
+};
+
+/**
+ * Rename assignment if the project that the assignment
+ * based from is changed.
+ * @param {*} project
+ * @returns
+ */
+exports.renameAssignment = async (project) => {
+  return await Assignment.findOneAndUpdate(
+    { projectId: project._id },
+    { name: project.name },
+    { new: true }
+  );
+};
 
 /**
  * Open assignment adn do checking of what to do
  * CREATE: If the assignment does not have user ID and project associated with it
  * OPEN: If the assignment does have user ID and project associated with it
  * UNARCHIVE: If the assignment does have user ID and project associated with it but it is archived
- * @param {*} assignmentID assignment ID
+ * @param {*} assignment assignment
  * @param {*} userID user ID
  * return assignment ID
  */
-exports.openAssignment = async (assignment, user) => {
+exports.openAssignment = async (assignment, userID) => {
   // Check if userID is in the list of copies
+  let user = await userController.findUser(userID);
   if (assignment.copies[user._id]) {
     let currentProject = await projectController.getProject(
       assignment.copies[user._id]
@@ -60,19 +81,19 @@ exports.openAssignment = async (assignment, user) => {
     return assignment.copies[user._id];
   }
 
-  // Create new project from assignment
+  // Create new project from assignment project
+  let assignmentProject = await projectController.getProject(
+    assignment.projectId
+  );
   const newProject = {
-    name: assignment.name,
-    data: assignment.data,
-    owner: user._id,
+    name: assignmentProject.name,
+    data: assignmentProject.data,
+    owner: userID,
   };
   const createdProject = await projectController.createProject(
     newProject,
     user
   );
-  if (!createdProject) {
-    return false;
-  }
   // Add project to assignment copies
   assignment.copies[user._id] = createdProject._id;
   assignment.markModified("copies");

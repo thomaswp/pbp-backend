@@ -71,6 +71,7 @@ describe("Project controller test", function () {
     assert.isNotNull(project);
     expect(project.name).to.equal(project_data.name);
     expect(project.owner).to.equal(project_data.owner);
+    assert.isFalse(project.isAssignment);
 
     // test that the user ref we pass in args was updated correctly
     expect(user.projects[project.id].name).to.equal(project_data.name);

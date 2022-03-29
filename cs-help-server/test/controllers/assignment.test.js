@@ -51,35 +51,41 @@ describe("Assignment controller test", function () {
   // TESTS
 
   it("create an assignment", async function () {
-    // create project
-    const assignment_data = {
+    // Create project as assignment template
+    const project_data = {
       name: "Rainfall Problem",
       data: '{"id":"demo@0.1.0","nodes":{"19":{"id":19,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-229.7236328125,-2.266326904296875],"name":"Number"},"20":{"id":20,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[{"node":64,"input":"value","data":{}}]}},"position":[-3.2878192628655256,-171.69686760417676],"name":"Number"},"21":{"id":21,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-563.3601395572005,-148.2577078805488],"name":"Number"},"64":{"id":64,"data":{"workerResults":{"current_sum":{"lazy":1,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}},"final_sum":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}}}},"inputs":{"loop":{"connections":[]},"value":{"connections":[{"node":20,"output":"number","data":{}}]}},"outputs":{"current_sum":{"connections":[]},"final_sum":{"connections":[]}},"position":[332.8209228515625,-200.82662963867188],"name":"Sum"}}}',
+      owner: user._id,
     };
-    let assignment = await assignmentController.createAssignment(
-      assignment_data
-    );
-    assert.isNotNull(assignmentController.getAssignment(assignment._id));
+    project = await projectController.createProject(project_data, user);
+    // create Assignment
+    let assignment = await assignmentController.createAssignment(project._id);
+    assert.isNotFalse(assignmentController.getAssignment(assignment._id));
+    assert.equal(assignment.copies[user._id], project._id);
   });
 
-  it("create an assignment without name", async function () {
-    // create project
-    const assignment_data = {
-      name: "",
-      data: '{"id":"demo@0.1.0","nodes":{"19":{"id":19,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-229.7236328125,-2.266326904296875],"name":"Number"},"20":{"id":20,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[{"node":64,"input":"value","data":{}}]}},"position":[-3.2878192628655256,-171.69686760417676],"name":"Number"},"21":{"id":21,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-563.3601395572005,-148.2577078805488],"name":"Number"},"64":{"id":64,"data":{"workerResults":{"current_sum":{"lazy":1,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}},"final_sum":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}}}},"inputs":{"loop":{"connections":[]},"value":{"connections":[{"node":20,"output":"number","data":{}}]}},"outputs":{"current_sum":{"connections":[]},"final_sum":{"connections":[]}},"position":[332.8209228515625,-200.82662963867188],"name":"Sum"}}}',
-    };
+  it("will not create an assignment without a project template", async function () {
+    // create Assignment
     let assignment = await assignmentController.createAssignment(
-      assignment_data
+      "nonexistent id"
     );
     assert.isFalse(assignment);
   });
 
-  it("create a project copy", async function () {
-    // create project
-    const assignment_data = {
+  it("will not create a duplicate assignment", async function () {
+    // Create project as assignment template
+    const project_data = {
       name: "Rainfall Problem",
       data: '{"id":"demo@0.1.0","nodes":{"19":{"id":19,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-229.7236328125,-2.266326904296875],"name":"Number"},"20":{"id":20,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[{"node":64,"input":"value","data":{}}]}},"position":[-3.2878192628655256,-171.69686760417676],"name":"Number"},"21":{"id":21,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-563.3601395572005,-148.2577078805488],"name":"Number"},"64":{"id":64,"data":{"workerResults":{"current_sum":{"lazy":1,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}},"final_sum":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}}}},"inputs":{"loop":{"connections":[]},"value":{"connections":[{"node":20,"output":"number","data":{}}]}},"outputs":{"current_sum":{"connections":[]},"final_sum":{"connections":[]}},"position":[332.8209228515625,-200.82662963867188],"name":"Sum"}}}',
+      owner: user._id,
     };
+    project = await projectController.createProject(project_data, user, true);
+    // create Assignment
+    let assignment = await assignmentController.createAssignment(project._id);
+    assert.isFalse(assignment);
+  });
+
+  it("create a project from assignment", async function () {
     //create second user
     const user2_data = {
       name: "MaryJane",
@@ -87,21 +93,28 @@ describe("Assignment controller test", function () {
       projects: {},
       templates: ["p1_template"],
     };
-    user2 = await userController.createUser(user2_data);
+    let user2 = await userController.createUser(user2_data);
+    // Create project as assignment template
+    const project_data = {
+      name: "Rainfall Problem",
+      data: '{"id":"demo@0.1.0","nodes":{"19":{"id":19,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-229.7236328125,-2.266326904296875],"name":"Number"},"20":{"id":20,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[{"node":64,"input":"value","data":{}}]}},"position":[-3.2878192628655256,-171.69686760417676],"name":"Number"},"21":{"id":21,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-563.3601395572005,-148.2577078805488],"name":"Number"},"64":{"id":64,"data":{"workerResults":{"current_sum":{"lazy":1,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}},"final_sum":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}}}},"inputs":{"loop":{"connections":[]},"value":{"connections":[{"node":20,"output":"number","data":{}}]}},"outputs":{"current_sum":{"connections":[]},"final_sum":{"connections":[]}},"position":[332.8209228515625,-200.82662963867188],"name":"Sum"}}}',
+      owner: user2._id,
+    };
+    project = await projectController.createProject(project_data, user2);
     //create assignment
-    let assignment = await assignmentController.createAssignment(
-      assignment_data
-    );
-    assert.isNotNull(assignmentController.getAssignment(assignment._id));
-    assert.isNotNull(user);
+    let assignment = await assignmentController.createAssignment(project._id);
+    assert.isNotFalse(assignment);
     //copy a project from the assignment
-    let projectID = await assignmentController.openAssignment(assignment, user);
+    let projectID = await assignmentController.openAssignment(
+      assignment,
+      user._id
+    );
     assert.isNotNull(projectID);
     assert.isNotNull(assignment.copies[user._id]);
     //copy a second project from the assignment with a different user
     let project2ID = await assignmentController.openAssignment(
       assignment,
-      user2
+      user2._id
     );
     assert.isNotNull(project2ID);
     assert.isNotNull(assignment.copies[user2._id]);
@@ -110,50 +123,70 @@ describe("Assignment controller test", function () {
   });
 
   it("open an existing project from an assignment", async function () {
-    // create project
-    const assignment_data = {
+    //create second user
+    const user2_data = {
+      name: "MaryJane",
+      email: "mj@ncsu.edu",
+      projects: {},
+      templates: ["p1_template"],
+    };
+    let user2 = await userController.createUser(user2_data);
+    // Create project as assignment template
+    const project_data = {
       name: "Rainfall Problem",
       data: '{"id":"demo@0.1.0","nodes":{"19":{"id":19,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-229.7236328125,-2.266326904296875],"name":"Number"},"20":{"id":20,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[{"node":64,"input":"value","data":{}}]}},"position":[-3.2878192628655256,-171.69686760417676],"name":"Number"},"21":{"id":21,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-563.3601395572005,-148.2577078805488],"name":"Number"},"64":{"id":64,"data":{"workerResults":{"current_sum":{"lazy":1,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}},"final_sum":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}}}},"inputs":{"loop":{"connections":[]},"value":{"connections":[{"node":20,"output":"number","data":{}}]}},"outputs":{"current_sum":{"connections":[]},"final_sum":{"connections":[]}},"position":[332.8209228515625,-200.82662963867188],"name":"Sum"}}}',
+      owner: user._id,
     };
+    project = await projectController.createProject(project_data, user);
     //create assignment
-    let assignment = await assignmentController.createAssignment(
-      assignment_data
-    );
+    let assignment = await assignmentController.createAssignment(project._id);
     assert.isNotNull(assignmentController.getAssignment(assignment._id));
-    assert.isNotNull(user);
     //copy a project from the assignment
-    let projectID = await assignmentController.openAssignment(assignment, user);
+    let projectID = await assignmentController.openAssignment(
+      assignment,
+      user._id
+    );
     assert.isNotNull(projectID);
     assert.isNotNull(assignment.copies[user._id]);
     assert.equal(projectID, assignment.copies[user._id]);
-    //open an assignment when the user is already stored
+    assert.equal(projectID, project._id);
+    //open an assignment for the second user
     let repeatedProjectID = await assignmentController.openAssignment(
       assignment,
-      user
+      user2._id
     );
-    assert.isNotNull(projectID);
-    assert.isNotNull(assignment.copies[user._id]);
-    assert.equal(projectID, repeatedProjectID);
-    assert.equal(repeatedProjectID, assignment.copies[user._id]);
+    assert.isNotNull(repeatedProjectID);
+    assert.isNotNull(assignment.copies[user2._id]);
+    assert.equal(repeatedProjectID, assignment.copies[user2._id]);
   });
 
   it("open an existing project from an assignment that is archived", async function () {
-    // create project
-    const assignment_data = {
-      name: "Rainfall Problem",
-      data: '{"id":"demo@0.1.0","nodes":{"19":{"id":19,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-229.7236328125,-2.266326904296875],"name":"Number"},"20":{"id":20,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[{"node":64,"input":"value","data":{}}]}},"position":[-3.2878192628655256,-171.69686760417676],"name":"Number"},"21":{"id":21,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-563.3601395572005,-148.2577078805488],"name":"Number"},"64":{"id":64,"data":{"workerResults":{"current_sum":{"lazy":1,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}},"final_sum":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}}}},"inputs":{"loop":{"connections":[]},"value":{"connections":[{"node":20,"output":"number","data":{}}]}},"outputs":{"current_sum":{"connections":[]},"final_sum":{"connections":[]}},"position":[332.8209228515625,-200.82662963867188],"name":"Sum"}}}',
+    //create second user
+    const user2_data = {
+      name: "MaryJane",
+      email: "mj@ncsu.edu",
+      projects: {},
+      templates: ["p1_template"],
     };
+    let user2 = await userController.createUser(user2_data);
+    // Create project as assignment template
+    const project_data = {
+      name: "Rainfall Archive Problem",
+      data: '{"id":"demo@0.1.0","nodes":{"19":{"id":19,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-229.7236328125,-2.266326904296875],"name":"Number"},"20":{"id":20,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[{"node":64,"input":"value","data":{}}]}},"position":[-3.2878192628655256,-171.69686760417676],"name":"Number"},"21":{"id":21,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-563.3601395572005,-148.2577078805488],"name":"Number"},"64":{"id":64,"data":{"workerResults":{"current_sum":{"lazy":1,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}},"final_sum":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}}}},"inputs":{"loop":{"connections":[]},"value":{"connections":[{"node":20,"output":"number","data":{}}]}},"outputs":{"current_sum":{"connections":[]},"final_sum":{"connections":[]}},"position":[332.8209228515625,-200.82662963867188],"name":"Sum"}}}',
+      owner: user._id,
+    };
+    project = await projectController.createProject(project_data, user);
     //create assignment
-    let assignment = await assignmentController.createAssignment(
-      assignment_data
-    );
+    let assignment = await assignmentController.createAssignment(project._id);
     assert.isNotNull(assignmentController.getAssignment(assignment._id));
-    assert.isNotNull(user);
     //copy a project from the assignment
-    let projectID = await assignmentController.openAssignment(assignment, user);
+    let projectID = await assignmentController.openAssignment(
+      assignment,
+      user2._id
+    );
     assert.isNotNull(projectID);
-    assert.isNotNull(assignment.copies[user._id]);
-    assert.equal(projectID, assignment.copies[user._id]);
+    assert.isNotNull(assignment.copies[user2._id]);
+    assert.equal(projectID, assignment.copies[user2._id]);
     //Archive project
     project = await projectController.getProject(projectID);
     project = await projectController.setArchived(project, true);
@@ -161,54 +194,75 @@ describe("Assignment controller test", function () {
     //open an assignment when the user is already stored
     let repeatedProjectID = await assignmentController.openAssignment(
       assignment,
-      user
+      user2._id
     );
-    assert.isNotNull(projectID);
-    assert.isNotNull(assignment.copies[user._id]);
-    assert.equal(projectID, repeatedProjectID);
-    assert.equal(repeatedProjectID, assignment.copies[user._id]);
-    project = await projectController.getProject(projectID);
+    assert.equal(repeatedProjectID, projectID);
+    assert.equal(repeatedProjectID, assignment.copies[user2._id]);
+    project = await projectController.getProject(repeatedProjectID);
     assert.isFalse(project.isArchived);
   });
 
-  it("try to open an assignment without a name", async function () {
-    // create project
-    const assignment_data = {
-      name: "Rainfall Problem",
-      data: '{"id":"demo@0.1.0","nodes":{"19":{"id":19,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-229.7236328125,-2.266326904296875],"name":"Number"},"20":{"id":20,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[{"node":64,"input":"value","data":{}}]}},"position":[-3.2878192628655256,-171.69686760417676],"name":"Number"},"21":{"id":21,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-563.3601395572005,-148.2577078805488],"name":"Number"},"64":{"id":64,"data":{"workerResults":{"current_sum":{"lazy":1,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}},"final_sum":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}}}},"inputs":{"loop":{"connections":[]},"value":{"connections":[{"node":20,"output":"number","data":{}}]}},"outputs":{"current_sum":{"connections":[]},"final_sum":{"connections":[]}},"position":[332.8209228515625,-200.82662963867188],"name":"Sum"}}}',
-    };
-    //create assignment
-    let assignment = await assignmentController.createAssignment(
-      assignment_data
-    );
-    assert.isNotNull(user);
-    assignment.name = "";
-    //copy a project from the assignment
-    let projectID = await assignmentController.openAssignment(assignment, user);
-    assert.isFalse(projectID);
-    assert.isUndefined(assignment.copies[user._id]);
-  });
-
   it("Returns all assignment present in the database", async function () {
-    const assignment_data = {
-      name: "Rainfall Problem",
-      data: '{"id":"demo@0.1.0","nodes":{"19":{"id":19,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-229.7236328125,-2.266326904296875],"name":"Number"},"20":{"id":20,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[{"node":64,"input":"value","data":{}}]}},"position":[-3.2878192628655256,-171.69686760417676],"name":"Number"},"21":{"id":21,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-563.3601395572005,-148.2577078805488],"name":"Number"},"64":{"id":64,"data":{"workerResults":{"current_sum":{"lazy":1,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}},"final_sum":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}}}},"inputs":{"loop":{"connections":[]},"value":{"connections":[{"node":20,"output":"number","data":{}}]}},"outputs":{"current_sum":{"connections":[]},"final_sum":{"connections":[]}},"position":[332.8209228515625,-200.82662963867188],"name":"Sum"}}}',
+    //create second user
+    const user2_data = {
+      name: "MaryJane",
+      email: "mj@ncsu.edu",
+      projects: {},
+      templates: ["p1_template"],
     };
-    const assignment_data2 = {
-      name: "Second Rainfall Problem",
+    let user2 = await userController.createUser(user2_data);
+    // Create project as assignment template
+    const project_data = {
+      name: "Rainfall All Problem",
       data: '{"id":"demo@0.1.0","nodes":{"19":{"id":19,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-229.7236328125,-2.266326904296875],"name":"Number"},"20":{"id":20,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[{"node":64,"input":"value","data":{}}]}},"position":[-3.2878192628655256,-171.69686760417676],"name":"Number"},"21":{"id":21,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-563.3601395572005,-148.2577078805488],"name":"Number"},"64":{"id":64,"data":{"workerResults":{"current_sum":{"lazy":1,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}},"final_sum":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}}}},"inputs":{"loop":{"connections":[]},"value":{"connections":[{"node":20,"output":"number","data":{}}]}},"outputs":{"current_sum":{"connections":[]},"final_sum":{"connections":[]}},"position":[332.8209228515625,-200.82662963867188],"name":"Sum"}}}',
+      owner: user._id,
     };
-    let assignment = await assignmentController.createAssignment(
-      assignment_data
-    );
-    let assignment2 = await assignmentController.createAssignment(
-      assignment_data2
-    );
-    assert.equal(assignment.name, assignment_data.name);
-    assert.equal(assignment2.name, assignment_data2.name);
+    const project_data2 = {
+      name: "Rainfall All Problem 2",
+      data: '{"id":"demo@0.1.0","nodes":{"19":{"id":19,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-229.7236328125,-2.266326904296875],"name":"Number"},"20":{"id":20,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[{"node":64,"input":"value","data":{}}]}},"position":[-3.2878192628655256,-171.69686760417676],"name":"Number"},"21":{"id":21,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-563.3601395572005,-148.2577078805488],"name":"Number"},"64":{"id":64,"data":{"workerResults":{"current_sum":{"lazy":1,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}},"final_sum":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}}}},"inputs":{"loop":{"connections":[]},"value":{"connections":[{"node":20,"output":"number","data":{}}]}},"outputs":{"current_sum":{"connections":[]},"final_sum":{"connections":[]}},"position":[332.8209228515625,-200.82662963867188],"name":"Sum"}}}',
+      owner: user2._id,
+    };
+    project = await projectController.createProject(project_data, user);
+    project2 = await projectController.createProject(project_data2, user2);
+    //create assignment
+    let assignment = await assignmentController.createAssignment(project._id);
+    let assignment2 = await assignmentController.createAssignment(project2._id);
+    assert.isNotNull(assignmentController.getAssignment(assignment._id));
+    assert.isNotNull(assignmentController.getAssignment(assignment2._id));
+    assert.equal(assignment.name, project_data.name);
+    assert.equal(assignment2.name, project_data2.name);
 
     let assignmentList = await assignmentController.getAllAssignments();
-    console.log(assignmentList);
     assert.equal(assignmentList.length, 2);
+  });
+
+  it("Rename assignment correctly", async function () {
+    //create second user
+    const user2_data = {
+      name: "MaryJane",
+      email: "mj@ncsu.edu",
+      projects: {},
+      templates: ["p1_template"],
+    };
+    let user2 = await userController.createUser(user2_data);
+    // Create project as assignment template
+    const project_data = {
+      name: "Rainfall Rename Problem",
+      data: '{"id":"demo@0.1.0","nodes":{"19":{"id":19,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-229.7236328125,-2.266326904296875],"name":"Number"},"20":{"id":20,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[{"node":64,"input":"value","data":{}}]}},"position":[-3.2878192628655256,-171.69686760417676],"name":"Number"},"21":{"id":21,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-563.3601395572005,-148.2577078805488],"name":"Number"},"64":{"id":64,"data":{"workerResults":{"current_sum":{"lazy":1,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}},"final_sum":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}}}},"inputs":{"loop":{"connections":[]},"value":{"connections":[{"node":20,"output":"number","data":{}}]}},"outputs":{"current_sum":{"connections":[]},"final_sum":{"connections":[]}},"position":[332.8209228515625,-200.82662963867188],"name":"Sum"}}}',
+      owner: user._id,
+    };
+    project = await projectController.createProject(project_data, user);
+    //create assignment
+    let assignment = await assignmentController.createAssignment(project._id);
+    // change project name
+    let newProject = await projectController.renameProject(
+      project,
+      "Rainfall Renamed"
+    );
+    // Change assignment name
+    //console.log(newProject);
+    let newAssignment = await assignmentController.renameAssignment(newProject);
+    //console.log(newAssignment);
+    assert.equal(newAssignment.name, newProject.name);
   });
 });

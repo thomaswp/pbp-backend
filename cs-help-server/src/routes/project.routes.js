@@ -6,6 +6,7 @@ const express = require("express");
 let router = express.Router();
 const userController = require("../controllers/user.controller");
 const projectController = require("../controllers/project.controller");
+const assignmentController = require("../controllers/assignment.controller");
 const { isLoggedIn } = require("../middleware/ensureLoggedIn");
 const { logger } = require("../config/logger.config");
 
@@ -68,6 +69,10 @@ router.put("/api/v1/projects/:id/name", isLoggedIn, async (req, res) => {
         project,
         newName
       );
+      // update assignment name if this project is assignment template
+      if (updatedProject.isAssignment) {
+        await assignmentController.renameAssignment(updatedProject);
+      }
       logger.debug(
         `PUT /api/v1/projects/:id/name updated project name: \n${updatedProject}`
       );

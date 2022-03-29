@@ -7,7 +7,7 @@ module.exports = (mongoose) => {
     {
       _id: String,
       name: String,
-      data: Object,
+      projectId: String,
       copies: Object,
     },
     {

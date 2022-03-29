@@ -7,7 +7,11 @@ const Project = db.projects;
  *  This method creates a new project to a user
  * @param {*} project  the project data
  */
-exports.createProject = async (project, currentUser) => {
+exports.createProject = async (
+  project,
+  currentUser,
+  isAnAssignment = false
+) => {
   // error check - must have project name
   if (!project.name) {
     return false;
@@ -19,6 +23,7 @@ exports.createProject = async (project, currentUser) => {
     name: project.name,
     data: project.data || {},
     owner: project.owner,
+    isAssignment: isAnAssignment,
   });
   await newProject.save();
 
@@ -46,7 +51,7 @@ exports.setArchived = async (project, isArchived = true) => {
   await project.save();
 
   // update in user document
-  const owner = await userController.findUser(project.owner);
+  let owner = await userController.findUser(project.owner);
   owner.projects[project.id].isArchived = isArchived;
   owner.markModified("projects");
   await owner.save();
@@ -94,7 +99,7 @@ exports.renameProject = async (project, newName) => {
 
 /**
  * Get project by id
- * @param {*} projectID project ID 
+ * @param {*} projectID project ID
  * @returns project that matches with the ID
  */
 exports.getProject = async (projectID) => {
