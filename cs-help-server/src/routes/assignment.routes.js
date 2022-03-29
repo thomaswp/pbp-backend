@@ -17,9 +17,9 @@ const { logger } = require("../config/logger.config");
  * url: POST /api/v1/assignment
  * returns: newly created project
  */
-router.post("/api/v1/assignment/:id", isLoggedIn, async (req, res) => {
+router.post("/api/v1/assignment", isLoggedIn, async (req, res) => {
   let currentAssignment = await assignmentController.getAssignment(
-    req.params.id
+    req.body.id
   );
   let currentUser = await userController.findUser(req.session.passport?.user);
   logger.debug(
@@ -48,9 +48,9 @@ router.post("/api/v1/assignment/:id", isLoggedIn, async (req, res) => {
 /**
  * Development API to populate assignment schema with examples
  */
-router.post("/api/v1/insert/:projectID", isLoggedIn, async (req, res) => {
+router.post("/api/v1/insert/", isLoggedIn, async (req, res) => {
   let createdAssignment = await assignmentController.createAssignment(
-    req.params.projectID
+    req.body.projectID
   );
   logger.debug(
     `POST /api/v1/insert/:projectID create assignment: ${createdAssignment}`
