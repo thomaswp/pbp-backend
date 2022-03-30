@@ -18,23 +18,43 @@ const { logger } = require("../config/logger.config");
  * returns: newly created project
  */
 router.post("/api/v1/open/assignment", isLoggedIn, async (req, res) => {
-  let currentAssignment = await assignmentController.getAssignment(req.body.assignmentID);
-  let currentUser = await userController.findUser(req.session.passport?.user);
+  let currentAssignment;
+  let currentUser;
+  try {
+    currentAssignment = await assignmentController.getAssignment(
+      req.body.assignmentID
+    );
+    currentUser = await userController.findUser(req.session.passport?.user);
+  } catch (err) {
+    logger.error(`POST /api/v1/assignment/:id 500 error: ${err}`);
+    return res
+      .status(500)
+      .json({ errMsg: "Failed to open the project from assignment." });
+  }
   logger.debug(
     `POST /api/v1/assignment/:id create project from existing assignment ${currentAssignment}`
   );
-  if(!currentAssignment || !currentUser) {
+
+  if (!currentAssignment || !currentUser) {
     logger.error(
-      `POST /api/v1/assignment/:id 400 error failed to open assignment from the given assignment ID`
+      `POST /api/v1/assignment/:id 400 error invalid assignment and user`
     );
     return res
       .status(400)
       .json({ errMsg: "Failed to open the project from assignment." });
   }
-  const projectID = await assignmentController.openAssignment(
-    currentAssignment,
-    currentUser._id
-  );
+
+  let projectID;
+  try {
+    projectID = await assignmentController.openAssignment(
+      currentAssignment,
+      currentUser._id
+    );
+  } catch (err) {
+    logger.error(`POST /api/v1/assignment/:id 500 error: ${err}`);
+    return res.status(500).json({ errMsg: "Failed to open the assignment." });
+  }
+
   if (!projectID) {
     logger.error(
       `POST /api/v1/assignment/:id 400 error cannot create project from assignment`
@@ -43,6 +63,7 @@ router.post("/api/v1/open/assignment", isLoggedIn, async (req, res) => {
       .status(400)
       .json({ errMsg: "Failed to open the project from assignment." });
   }
+
   logger.debug(
     `POST /api/v1/assignment/:id new project id from assignment: ${projectID}`
   );
@@ -55,9 +76,15 @@ router.post("/api/v1/open/assignment", isLoggedIn, async (req, res) => {
  * Development API to populate assignment schema with examples
  */
 router.post("/api/v1/insert/assignment", isLoggedIn, async (req, res) => {
-  let createdAssignment = await assignmentController.createAssignment(
-    req.body.projectID
-  );
+  let createdAssignment;
+  try {
+    createdAssignment = await assignmentController.createAssignment(
+      req.body.projectID
+    );
+  } catch (err) {
+    logger.error(`POST /api/v1/insert/assignment 500 error: ${err}`);
+    return res.status(500).json({ errMsg: "Failed to create an assignment." });
+  }
   logger.debug(
     `POST /api/v1/insert/:projectID create assignment: ${createdAssignment}`
   );
@@ -89,7 +116,7 @@ router.get("/api/v1/assignment", isLoggedIn, async (req, res) => {
  * url: GET /api/v1/assignment/:id
  * returns: An assignment found by ID
  */
- router.get("/api/v1/assignment/:id", isLoggedIn, async (req, res) => {
+router.get("/api/v1/assignment/:id", isLoggedIn, async (req, res) => {
   let assignment = await assignmentController.getAssignment(req.params.id);
   logger.debug(`GET /api/v1/assignment/:id get an assignment: ${assignment}`);
   if (!assignment) {
@@ -108,16 +135,21 @@ router.get("/api/v1/assignment", isLoggedIn, async (req, res) => {
  * returns: An assignment found by ID
  */
 router.delete("/api/v1/assignment/:id", isLoggedIn, async (req, res) => {
-  let assignment = await assignmentController.getAssignment(req.params.id);
-  if (!assignment) {
-    res.status(500);
-    return res.json({ errMesg: "Not Found" });
+  try {
+    let assignment = await assignmentController.getAssignment(req.params.id);
+    if (!assignment) {
+      res.status(500);
+      return res.json({ errMesg: "Not Found" });
+    }
+    // set project isAssignment to false
+    await assignmentController.deleteAssignment(assignment);
+    logger.info(`DELETE /api/v1/assignment/:id 200 success`);
+    res.status(200);
+    return res.json(assignment);
+  } catch (err) {
+    logger.error(`DELETE /api/v1/assignment/:id 500 error: ${err}`);
+    return res.status(500).json({ errMsg: "Failed to delete an assignment." });
   }
-  // set project isAssignment to false
-  await assignmentController.deleteAssignment(assignment);
-  logger.info(`DELETE /api/v1/assignment/:id 200 success`);
-  res.status(200);
-  return res.json(assignment);
 });
 
 module.exports = router;
