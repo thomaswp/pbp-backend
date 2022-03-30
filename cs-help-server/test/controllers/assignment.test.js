@@ -265,4 +265,64 @@ describe("Assignment controller test", function () {
     //console.log(newAssignment);
     assert.equal(newAssignment.name, newProject.name);
   });
+
+  it("Delete assignment correctly", async function () {
+    //create second user
+    const user2_data = {
+      name: "MaryJane",
+      email: "mj@ncsu.edu",
+      projects: {},
+      templates: ["p1_template"],
+    };
+    let user2 = await userController.createUser(user2_data);
+    // Create project as assignment template
+    const project_data = {
+      name: "Rainfall Rename Problem",
+      data: '{"id":"demo@0.1.0","nodes":{"19":{"id":19,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-229.7236328125,-2.266326904296875],"name":"Number"},"20":{"id":20,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[{"node":64,"input":"value","data":{}}]}},"position":[-3.2878192628655256,-171.69686760417676],"name":"Number"},"21":{"id":21,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-563.3601395572005,-148.2577078805488],"name":"Number"},"64":{"id":64,"data":{"workerResults":{"current_sum":{"lazy":1,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}},"final_sum":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}}}},"inputs":{"loop":{"connections":[]},"value":{"connections":[{"node":20,"output":"number","data":{}}]}},"outputs":{"current_sum":{"connections":[]},"final_sum":{"connections":[]}},"position":[332.8209228515625,-200.82662963867188],"name":"Sum"}}}',
+      owner: user._id,
+    };
+    project = await projectController.createProject(project_data, user);
+    //create assignment
+    let assignment = await assignmentController.createAssignment(project._id);
+    // Delete assignment
+    let deletedAssignment = await assignmentController.deleteAssignment(
+      assignment
+    );
+    //console.log(newAssignment);
+    assert.equal(deletedAssignment.name, assignment.name);
+    // get all assignment
+    let assignmentList = await assignmentController.getAllAssignments();
+    assert.equal(assignmentList.length, 0);
+  });
+
+  it("Delete assignment with invalid project", async function () {
+    //create second user
+    const user2_data = {
+      name: "MaryJane",
+      email: "mj@ncsu.edu",
+      projects: {},
+      templates: ["p1_template"],
+    };
+    let user2 = await userController.createUser(user2_data);
+    // Create project as assignment template
+    const project_data = {
+      name: "Rainfall Rename Problem",
+      data: '{"id":"demo@0.1.0","nodes":{"19":{"id":19,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-229.7236328125,-2.266326904296875],"name":"Number"},"20":{"id":20,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[{"node":64,"input":"value","data":{}}]}},"position":[-3.2878192628655256,-171.69686760417676],"name":"Number"},"21":{"id":21,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-563.3601395572005,-148.2577078805488],"name":"Number"},"64":{"id":64,"data":{"workerResults":{"current_sum":{"lazy":1,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}},"final_sum":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}}}},"inputs":{"loop":{"connections":[]},"value":{"connections":[{"node":20,"output":"number","data":{}}]}},"outputs":{"current_sum":{"connections":[]},"final_sum":{"connections":[]}},"position":[332.8209228515625,-200.82662963867188],"name":"Sum"}}}',
+      owner: user._id,
+    };
+    project = await projectController.createProject(project_data, user);
+    //create assignment
+    let assignment = await assignmentController.createAssignment(project._id);
+    assignment.projectId = "invalidID";
+    assignment.save();
+    // Delete assignment
+    let deletedAssignment = await assignmentController.deleteAssignment(
+      assignment
+    );
+    //console.log(newAssignment);
+    assert.isFalse(deletedAssignment);
+    // get all assignment
+    let assignmentList = await assignmentController.getAllAssignments();
+    assert.equal(assignmentList.length, 1);
+  });
 });

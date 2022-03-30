@@ -102,6 +102,13 @@ exports.openAssignment = async (assignment, userID) => {
 };
 
 exports.deleteAssignment = async (assignment) => {
+  let project = await projectController.getProject(assignment.projectId);
+  if (!project) {
+    return false;
+  }
+  project.isAssignment = false;
+  await project.save();
+  //delete assignment
   await assignment.deleteOne();
   return assignment;
 };

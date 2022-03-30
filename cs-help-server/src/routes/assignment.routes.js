@@ -80,7 +80,7 @@ router.get("/api/v1/assignment", isLoggedIn, async (req, res) => {
     return res.status(500).json({ errMesg: "Not Found" });
   } else {
     logger.info(`GET /api/v1/assignment 200 success`);
-    res.status(200).json(assignmentList);
+    return res.status(200).json(assignmentList);
   }
 });
 
@@ -94,11 +94,11 @@ router.get("/api/v1/assignment", isLoggedIn, async (req, res) => {
   logger.debug(`GET /api/v1/assignment/:id get an assignment: ${assignment}`);
   if (!assignment) {
     res.status(500);
-    res.json({ errMesg: "Not Found" });
+    return res.json({ errMesg: "Not Found" });
   } else {
     logger.info(`GET /api/v1/assignment/:id 200 success`);
     res.status(200);
-    res.json(assignment);
+    return res.json(assignment);
   }
 });
 
@@ -107,16 +107,17 @@ router.get("/api/v1/assignment", isLoggedIn, async (req, res) => {
  * url: DELETE /api/v1/assignment/:id
  * returns: An assignment found by ID
  */
-
 router.delete("/api/v1/assignment/:id", isLoggedIn, async (req, res) => {
   let assignment = await assignmentController.getAssignment(req.params.id);
   if (!assignment) {
     res.status(500);
-    res.json({ errMesg: "Not Found" });
+    return res.json({ errMesg: "Not Found" });
   }
+  // set project isAssignment to false
   await assignmentController.deleteAssignment(assignment);
   logger.info(`DELETE /api/v1/assignment/:id 200 success`);
   res.status(200);
+  return res.json(assignment);
 });
 
 module.exports = router;
