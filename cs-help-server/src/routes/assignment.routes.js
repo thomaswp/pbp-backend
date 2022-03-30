@@ -102,4 +102,21 @@ router.get("/api/v1/assignment", isLoggedIn, async (req, res) => {
   }
 });
 
+/**
+ * API used to delete an assignment
+ * url: DELETE /api/v1/assignment/:id
+ * returns: An assignment found by ID
+ */
+
+router.delete("/api/v1/assignment/:id", isLoggedIn, async (req, res) => {
+  let assignment = await assignmentController.getAssignment(req.params.id);
+  if (!assignment) {
+    res.status(500);
+    res.json({ errMesg: "Not Found" });
+  }
+  await assignmentController.deleteAssignment(assignment);
+  logger.info(`DELETE /api/v1/assignment/:id 200 success`);
+  res.status(200);
+});
+
 module.exports = router;

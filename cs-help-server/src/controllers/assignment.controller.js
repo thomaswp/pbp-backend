@@ -100,3 +100,8 @@ exports.openAssignment = async (assignment, userID) => {
   await assignment.save();
   return createdProject._id;
 };
+
+exports.deleteAssignment = async (assignment) => {
+  await assignment.deleteOne();
+  return assignment;
+};
