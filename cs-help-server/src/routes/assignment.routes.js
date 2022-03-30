@@ -84,4 +84,22 @@ router.get("/api/v1/assignment", isLoggedIn, async (req, res) => {
   }
 });
 
+/**
+ * API used to get an assignment
+ * url: GET /api/v1/assignment/:id
+ * returns: An assignment found by ID
+ */
+ router.get("/api/v1/assignment/:id", isLoggedIn, async (req, res) => {
+  let assignment = await assignmentController.getAssignment(req.params.id);
+  logger.debug(`GET /api/v1/assignment/:id get an assignment: ${assignment}`);
+  if (!assignment) {
+    res.status(500);
+    res.json({ errMesg: "Not Found" });
+  } else {
+    logger.info(`GET /api/v1/assignment/:id 200 success`);
+    res.status(200);
+    res.json(assignment);
+  }
+});
+
 module.exports = router;
