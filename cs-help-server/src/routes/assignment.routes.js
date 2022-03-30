@@ -17,14 +17,20 @@ const { logger } = require("../config/logger.config");
  * url: POST /api/v1/assignment
  * returns: newly created project
  */
-router.post("/api/v1/assignment", isLoggedIn, async (req, res) => {
-  let currentAssignment = await assignmentController.getAssignment(
-    req.body.id
-  );
+router.post("/api/v1/open/assignment", isLoggedIn, async (req, res) => {
+  let currentAssignment = await assignmentController.getAssignment(req.body.assignmentID);
   let currentUser = await userController.findUser(req.session.passport?.user);
   logger.debug(
-    `POST /api/v1/assignment/:id create project from assignment ${currentAssignment}`
+    `POST /api/v1/assignment/:id create project from existing assignment ${currentAssignment}`
   );
+  if(!currentAssignment || !currentUser) {
+    logger.error(
+      `POST /api/v1/assignment/:id 400 error failed to open assignment from the given assignment ID`
+    );
+    return res
+      .status(400)
+      .json({ errMsg: "Failed to open the project from assignment." });
+  }
   const projectID = await assignmentController.openAssignment(
     currentAssignment,
     currentUser._id
@@ -33,7 +39,7 @@ router.post("/api/v1/assignment", isLoggedIn, async (req, res) => {
     logger.error(
       `POST /api/v1/assignment/:id 400 error cannot create project from assignment`
     );
-    res
+    return res
       .status(400)
       .json({ errMsg: "Failed to open the project from assignment." });
   }
@@ -42,13 +48,13 @@ router.post("/api/v1/assignment", isLoggedIn, async (req, res) => {
   );
   logger.info(`POST /api/v1/assignment/:id 200 success`);
   res.status(201);
-  res.json({ projectID: projectID });
+  return res.json({ projectID: projectID });
 });
 
 /**
  * Development API to populate assignment schema with examples
  */
-router.post("/api/v1/insert/", isLoggedIn, async (req, res) => {
+router.post("/api/v1/insert/assignment", isLoggedIn, async (req, res) => {
   let createdAssignment = await assignmentController.createAssignment(
     req.body.projectID
   );
@@ -57,10 +63,9 @@ router.post("/api/v1/insert/", isLoggedIn, async (req, res) => {
   );
   if (!createdAssignment) {
     logger.error(`POST /api/v1/insert/:projectID 500 failure`);
-    res.status(500).json({ errMsg: "Failed to create an assignment" });
+    return res.status(500).json({ errMsg: "Failed to create an assignment" });
   }
-  res.status(201);
-  res.json(createdAssignment);
+  return res.status(201).json(createdAssignment);
 });
 
 /**
@@ -72,12 +77,10 @@ router.get("/api/v1/assignment", isLoggedIn, async (req, res) => {
   let assignmentList = await assignmentController.getAllAssignments();
   logger.debug(`GET /api/v1/assignment all assignment: ${assignmentList}`);
   if (!assignmentList) {
-    res.status(500);
-    res.json({ errMesg: "Not Found" });
+    return res.status(500).json({ errMesg: "Not Found" });
   } else {
     logger.info(`GET /api/v1/assignment 200 success`);
-    res.status(200);
-    res.json(assignmentList);
+    res.status(200).json(assignmentList);
   }
 });
 

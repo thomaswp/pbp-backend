@@ -2,8 +2,8 @@ module.exports = {
   // operation's method
   post: {
     tags: ["assignment"], // operation's tag
-    description: "Create assignment. This method allows admin to create an assignment by providing assignment name and rete data", // short desc
-    operationId: "createAssignment", // unique operation id
+    description: "Create project from assignment. This method allows user to create a project by providing assignment ID", // short desc
+    operationId: "openAssignment", // unique operation id
     parameters: [], // expected params
     requestBody: {
       // expected request body
@@ -11,7 +11,7 @@ module.exports = {
         // content-type
         "application/json": {
           schema: {
-            $ref: "#/components/schemas/ProjectID", 
+            $ref: "#/components/schemas/AssignmentID", 
           },
         },
       },
@@ -20,7 +20,7 @@ module.exports = {
     responses: {
       // response code
       201: {
-        description: "Assignment created successfully", // response desc
+        description: "Project created successfully from assignment", // response desc
       },
       // response code
       500: {

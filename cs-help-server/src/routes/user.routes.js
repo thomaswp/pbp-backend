@@ -20,7 +20,7 @@ router.get("/api/v1/users/:id", isLoggedIn, (req, res) => {
     email: "jdoe@email.com",
     session: req.session.passport.user,
   };
-  res.json(sampleUser);
+  return res.json(sampleUser);
 });
 
 /**
@@ -34,11 +34,11 @@ router.get("/api/v1/user", isLoggedIn, async (req, res) => {
   if (!currentUser) {
     logger.error(`GET /api/v1/user 500 not found`);
     res.status(500);
-    res.json({ errMesg: "Not Found" });
+    return res.json({ errMesg: "Not Found" });
   } else {
     logger.info(`GET /api/v1/user 200 success`);
     res.status(200);
-    res.json(currentUser);
+    return res.json(currentUser);
   }
 });
 
