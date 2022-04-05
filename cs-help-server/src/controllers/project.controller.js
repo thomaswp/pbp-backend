@@ -10,7 +10,8 @@ const Project = db.projects;
 exports.createProject = async (
   project,
   currentUser,
-  isAnAssignment = false
+  isAnAssignment = false,
+  isAnAssignmentCopy = false
 ) => {
   // error check - must have project name
   if (!project.name) {
@@ -24,6 +25,7 @@ exports.createProject = async (
     data: project.data || {},
     owner: project.owner,
     isAssignment: isAnAssignment,
+    isAssignmentCopy: isAnAssignmentCopy,
   });
   await newProject.save();
 

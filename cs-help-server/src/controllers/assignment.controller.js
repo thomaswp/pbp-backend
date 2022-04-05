@@ -92,7 +92,9 @@ exports.openAssignment = async (assignment, userID) => {
   };
   const createdProject = await projectController.createProject(
     newProject,
-    user
+    user,
+    false,
+    true
   );
   // Add project to assignment copies
   assignment.copies[user._id] = createdProject._id;

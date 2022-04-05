@@ -11,6 +11,7 @@ module.exports = (mongoose) => {
       data: Object,
       owner: String,
       isAssignment: { type: Boolean, default: false },
+      isAssignmentCopy: { type: Boolean, default: false },
       isArchived: {
         type: Boolean,
         default: false,
