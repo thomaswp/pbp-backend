@@ -16,6 +16,7 @@ module.exports = (mongoose) => {
         type: Boolean,
         default: false,
       },
+      assignmentId: { type: String, default: "" },
     },
     {
       timestamps: true,

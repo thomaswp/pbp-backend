@@ -94,7 +94,8 @@ exports.openAssignment = async (assignment, userID) => {
     newProject,
     user,
     false,
-    true
+    true,
+    assignment._id
   );
   // Add project to assignment copies
   assignment.copies[user._id] = createdProject._id;
@@ -103,14 +104,60 @@ exports.openAssignment = async (assignment, userID) => {
   return createdProject._id;
 };
 
+/**
+ * Delete an assignment and set isAssignmentCopy and assignmentId
+ * inside a Project to false and empty string, respectively
+ * @param {*} assignment assignment
+ * @returns
+ */
 exports.deleteAssignment = async (assignment) => {
+  // Delete project assignment template
   let project = await projectController.getProject(assignment.projectId);
   if (!project) {
     return false;
   }
   project.isAssignment = false;
   await project.save();
+
+  // Delete all copies of projects inside an assignment
+  let listOfProjectsPromise = [];
+  for (const [userId, projectId] of Object.entries(assignment.copies)) {
+    //console.log(`${userId}: ${projectId}`);
+    listOfProjectsPromise.push(projectController.getProject(projectId));
+  }
+  let projects = await Promise.all(listOfProjectsPromise);
+
+  let listOfSaveProjectsPromise = [];
+  projects.forEach((project) => {
+    project.assignmentId = "";
+    project.isAssignmentCopy = false;
+    listOfSaveProjectsPromise.push(project.save());
+  });
+  Promise.all(listOfSaveProjectsPromise);
+
   //delete assignment
   await assignment.deleteOne();
   return assignment;
+};
+
+/**
+ * Reset project with the latest assignment data
+ * @param {*} projectID project ID to reset
+ * @param {*} assignment Assignment
+ * @returns updated project data
+ */
+exports.resetAssignmentProject = async (project) => {
+  // Get Assignment
+  if (project.assignmentId !== "") {
+    let assignment = await this.getAssignment(project.assignmentId);
+    let assignmentProject = await projectController.getProject(
+      assignment.projectId
+    );
+
+    // reset project
+    project.data = assignmentProject.data;
+    return await project.save();
+  }
+
+  return false;
 };

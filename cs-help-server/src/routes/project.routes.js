@@ -41,6 +41,33 @@ router.post("/api/v1/projects", isLoggedIn, async (req, res) => {
 });
 
 /**
+ * API used to reset a project with latest assignment
+ * url: POST /api/v1/project/reset
+ * returns: newly updated project
+ */
+router.post("/api/v1/project/reset", isLoggedIn, async (req, res) => {
+  let resetProject;
+  let updatedProject;
+  try {
+    resetProject = await projectController.getProject(req.body.projectID);
+    if (resetProject) {
+      updatedProject = await assignmentController.resetAssignmentProject(
+        resetProject
+      );
+    }
+  } catch (err) {
+    logger.error(`POST /api/v1/project/reset 500 error: ${err}`);
+    return res.status(500).json({ errMsg: "Failed to reset the project." });
+  }
+  if (!updatedProject) {
+    logger.error(`POST /api/v1/project/reset 500 failure`);
+    return res.status(500).json({ errMsg: "Failed to reset project" });
+  }
+  logger.info(`POST /api/v1/project/reset 201 OK reset project: ${updatedProject}`);
+  return res.status(201).json(updatedProject);
+});
+
+/**
  * API used to update project name
  * url: PUT /api/v1/project/:id/name
  * returns: newly updated project

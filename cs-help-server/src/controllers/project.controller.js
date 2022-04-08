@@ -11,7 +11,8 @@ exports.createProject = async (
   project,
   currentUser,
   isAnAssignment = false,
-  isAnAssignmentCopy = false
+  isAnAssignmentCopy = false,
+  assignmentID = ""
 ) => {
   // error check - must have project name
   if (!project.name) {
@@ -26,6 +27,7 @@ exports.createProject = async (
     owner: project.owner,
     isAssignment: isAnAssignment,
     isAssignmentCopy: isAnAssignmentCopy,
+    assignmentId: assignmentID
   });
   await newProject.save();
 

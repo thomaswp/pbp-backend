@@ -33,4 +33,15 @@ module.exports = {
       },
     },
   },
+  ProjectID: {
+    type: "object",
+    required: ["projectID"],
+    properties: {
+      projectID: {
+        type: "string",
+        description: "Project ID to reset",
+        example: "Hujudhtgskp_45",
+      },
+    },
+  },
 };
