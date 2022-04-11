@@ -6,6 +6,7 @@ const express = require("express");
 let router = express.Router();
 const userController = require("../controllers/user.controller");
 const assignmentController = require("../controllers/assignment.controller");
+const projectController = require("../controllers/project.controller");
 const { isLoggedIn } = require("../middleware/ensureLoggedIn");
 const { logger } = require("../config/logger.config");
 
@@ -117,7 +118,12 @@ router.get("/api/v1/assignment", isLoggedIn, async (req, res) => {
  * returns: An assignment found by ID
  */
 router.get("/api/v1/assignment/:id", isLoggedIn, async (req, res) => {
-  let assignment = await assignmentController.getAssignment(req.params.id);
+  let currentProj = await projectController.getProject(req.params.id)
+  if (!currentProj) {
+    res.status(500);
+    return res.json({ errMesg: "Not Found" });
+  }
+  let assignment = await assignmentController.getAssignment(currentProj.assignmentId);
   logger.debug(`GET /api/v1/assignment/:id get an assignment: ${assignment}`);
   if (!assignment) {
     res.status(500);
