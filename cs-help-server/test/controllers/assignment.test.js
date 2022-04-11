@@ -57,11 +57,19 @@ describe("Assignment controller test", function () {
       data: '{"id":"demo@0.1.0","nodes":{"19":{"id":19,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-229.7236328125,-2.266326904296875],"name":"Number"},"20":{"id":20,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[{"node":64,"input":"value","data":{}}]}},"position":[-3.2878192628655256,-171.69686760417676],"name":"Number"},"21":{"id":21,"data":{"output_number":0,"workerResults":{"number":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":0,"parent":null,"children":{}}}}},"inputs":{},"outputs":{"number":{"connections":[]}},"position":[-563.3601395572005,-148.2577078805488],"name":"Number"},"64":{"id":64,"data":{"workerResults":{"current_sum":{"lazy":1,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}},"final_sum":{"lazy":0,"executionTrace":{"context":{"parent":null,"description":"","id":"root"},"value":null,"parent":null,"children":{}}}}},"inputs":{"loop":{"connections":[]},"value":{"connections":[{"node":20,"output":"number","data":{}}]}},"outputs":{"current_sum":{"connections":[]},"final_sum":{"connections":[]}},"position":[332.8209228515625,-200.82662963867188],"name":"Sum"}}}',
       owner: user._id,
     };
-    project = await projectController.createProject(project_data, user);
+    let project = await projectController.createProject(project_data, user);
     // create Assignment
     let assignment = await assignmentController.createAssignment(project._id);
     assert.isNotFalse(assignmentController.getAssignment(assignment._id));
     assert.equal(assignment.copies[user._id], project._id);
+
+    // Check user assignment list
+    project = await projectController.getProject(project._id);
+    let checkUser = await userController.findUser(user._id);
+    assert.equal(
+      checkUser.projects[project._id].isAssignment,
+      project.isAssignment
+    );
   });
 
   it("will not create an assignment without a project template", async function () {
@@ -123,6 +131,14 @@ describe("Assignment controller test", function () {
     assert.isNotNull(assignment.copies[user2._id]);
     assert.equal(projectID, assignment.copies[user._id]);
     assert.equal(project2ID, assignment.copies[user2._id]);
+
+    // Check user assignment list
+    project2 = await projectController.getProject(project2ID);
+    let checkUser = await userController.findUser(user2._id);
+    assert.equal(
+      checkUser.projects[project2._id].isAssignmentCopy,
+      project2.isAssignmentCopy
+    );
   });
 
   it("open an existing project from an assignment", async function () {

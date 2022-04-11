@@ -27,7 +27,7 @@ exports.createProject = async (
     owner: project.owner,
     isAssignment: isAnAssignment,
     isAssignmentCopy: isAnAssignmentCopy,
-    assignmentId: assignmentID
+    assignmentId: assignmentID,
   });
   await newProject.save();
 
@@ -35,6 +35,8 @@ exports.createProject = async (
   currentUser.projects[newProject._id] = {
     name: project.name,
     isArchived: project.isArchived || false,
+    isAssignment: isAnAssignment,
+    isAssignmentCopy: isAnAssignmentCopy,
   };
   currentUser.markModified("projects");
   await currentUser.save();

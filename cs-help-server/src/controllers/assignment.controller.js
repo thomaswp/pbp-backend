@@ -5,6 +5,18 @@ const userController = require("./user.controller");
 const Assignment = db.assignments;
 
 /**
+ * Function to help update project list status in User schema
+ * @param {*} project project to be updated
+ */
+exports.updateUserAssignmentStatus = async (project) => {
+  let user = await userController.findUser(project.owner);
+  user.projects[project._id].isAssignment = project.isAssignment;
+  user.projects[project._id].isAssignmentCopy = project.isAssignmentCopy;
+  user.markModified("projects");
+  await user.save();
+};
+
+/**
  * This method creates a new assignment by setting the project isAssignment to true
  * @param {*} projectID  the project ID
  */
@@ -26,6 +38,10 @@ exports.createAssignment = async (projectID) => {
   });
   newAssignment.copies[project.owner] = project._id;
   await newAssignment.save();
+
+  // Update User projects list
+  await this.updateUserAssignmentStatus(project);
+
   // return the new project
   return newAssignment;
 };
@@ -97,6 +113,10 @@ exports.openAssignment = async (assignment, userID) => {
     true,
     assignment._id
   );
+
+  // Update User projects list
+  await this.updateUserAssignmentStatus(createdProject);
+
   // Add project to assignment copies
   assignment.copies[user._id] = createdProject._id;
   assignment.markModified("copies");
@@ -133,7 +153,14 @@ exports.deleteAssignment = async (assignment) => {
     project.isAssignmentCopy = false;
     listOfSaveProjectsPromise.push(project.save());
   });
-  Promise.all(listOfSaveProjectsPromise);
+  await Promise.all(listOfSaveProjectsPromise);
+
+  // Update user project list
+  let listOfUpdateuserProj = [];
+  projects.forEach((project) => {
+    listOfUpdateuserProj.push(this.updateUserAssignmentStatus(project));
+  });
+  await Promise.all(listOfUpdateuserProj);
 
   //delete assignment
   await assignment.deleteOne();
