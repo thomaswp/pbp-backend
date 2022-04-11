@@ -174,6 +174,17 @@ exports.deleteAssignment = async (assignment) => {
  * @returns updated project data
  */
 exports.resetAssignmentProject = async (project) => {
+  let user = await userController.findUser(project.owner);
+  const newProject = {
+    name: project.name,
+    data: project.data,
+    owner: project.owner,
+    isArchived: true,
+  };
+  const createdProject = await projectController.createProject(
+    newProject,
+    user
+  );
   // Get Assignment
   if (project.assignmentId !== "") {
     let assignment = await this.getAssignment(project.assignmentId);
