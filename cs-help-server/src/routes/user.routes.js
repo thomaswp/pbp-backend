@@ -13,14 +13,18 @@ let router = express.Router();
  * url: GET /api/v1/users/:id
  * returns: passed ID
  */
-router.get("/api/v1/users/:id", isLoggedIn, (req, res) => {
+router.get("/api/v1/users/:id", isLoggedIn, async (req, res) => {
   let id = req.params.id;
-  let sampleUser = {
-    name: "John Doe " + id,
-    email: "jdoe@email.com",
-    session: req.session.passport.user,
-  };
-  return res.json(sampleUser);
+  let founduser = await userController.findUser(id);
+  if(!founduser) {
+    logger.error(`GET /api/v1/user/:id 500 not found`);
+    res.status(500);
+    return res.json({ errMesg: "Not Found" });
+  } else {
+    logger.info(`GET /api/v1/user/:id 200 success`);
+    res.status(200);
+    return res.json(founduser);
+  }
 });
 
 /**
