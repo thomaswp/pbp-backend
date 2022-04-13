@@ -29,4 +29,6 @@ module.exports = {
   federatedidentity: require("./federated_identity.model.js")(mongoose),
   // Project
   projects: require("./project.model.js")(mongoose),
+  // Assignment
+  assignments: require("./assignment.model.js")(mongoose),
 };

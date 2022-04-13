@@ -10,10 +10,13 @@ module.exports = (mongoose) => {
       name: String,
       data: Object,
       owner: String,
+      isAssignment: { type: Boolean, default: false },
+      isAssignmentCopy: { type: Boolean, default: false },
       isArchived: {
         type: Boolean,
         default: false,
       },
+      assignmentId: { type: String, default: "" },
     },
     {
       timestamps: true,

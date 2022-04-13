@@ -14,6 +14,7 @@ const port = process.env.NODE_DOCKER_PORT || 5000;
 userRouter = require("./src/routes/user.routes");
 authRouter = require("./src/routes/auth.routes");
 projectRouter = require("./src/routes/project.routes");
+assignmentRouter = require("./src/routes/assignment.routes");
 
 // parse requests of content-type - application/json
 app.use(bodyParser.json());
@@ -47,6 +48,7 @@ app.use(function(req, res, next) {
 app.use("/", authRouter);
 app.use("/", userRouter);
 app.use("/", projectRouter);
+app.use("/", assignmentRouter);
 
 // Swagger API docs
 require("./docs")(app);
