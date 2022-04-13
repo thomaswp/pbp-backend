@@ -114,8 +114,8 @@ router.get("/api/v1/assignment", isLoggedIn, async (req, res) => {
 
 /**
  * API used to get an assignment
- * url: GET /api/v1/assignment/:id
- * returns: An assignment found by ID
+ * url: GET /api/v1/assignment/:projectId
+ * returns: An assignment found by project ID
  */
 router.get("/api/v1/assignment/:id", isLoggedIn, async (req, res) => {
   let currentProj = await projectController.getProject(req.params.id)
