@@ -4,8 +4,9 @@ const userController = require("./user.controller");
 const Project = db.projects;
 
 /**
- *  This method creates a new project to a user
+ *  This method creates a new project for a user
  * @param {*} project  the project data
+ * @returns the new project that is created
  */
 exports.createProject = async (
   project,
@@ -47,8 +48,8 @@ exports.createProject = async (
 
 /**
  * Method to archive a project
- * @param {*} project project data
- * @param {*} isArchived is archived
+ * @param {*} project project data, project to be archived or unarchived
+ * @param {*} isArchived is archived, by default true to set project archvied
  * @returns updated project
  */
 exports.setArchived = async (project, isArchived = true) => {
@@ -67,9 +68,9 @@ exports.setArchived = async (project, isArchived = true) => {
 };
 
 /**
- * Save a project with the rete data
- * @param {*} project target project
- * @param {*} reteData rete data
+ * Save a project with the rete data to the database
+ * @param {*} project target project to be saved
+ * @param {*} reteData rete data to be saved
  * @returns newly saved project
  */
 exports.saveProject = async (project, reteData) => {
@@ -84,8 +85,8 @@ exports.saveProject = async (project, reteData) => {
 
 /**
  * Rename a project
- * @param {*} project target project
- * @param {*} newName ew project name
+ * @param {*} project target project to be renamed
+ * @param {*} newName new project name
  * @returns newly renamed project
  */
 exports.renameProject = async (project, newName) => {
