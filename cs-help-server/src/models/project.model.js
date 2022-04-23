@@ -1,7 +1,12 @@
 /** This model represents the Project Schema
- * ID: auto-generated ID
+ * _id: auto-generated ID
  * name: project name
+ * data: rete data for this project
  * owner: this should be user's _id
+ * isAssignment: flag for if this project is an assignment
+ * isAssignmentCopy: flag for is this project was copied from an assignment
+ * isArchived: flag for if this project is archived
+ * assignmentId: the assignmentId that this project is associated with if this is an assignmentCopy
  **/
 module.exports = (mongoose) => {
   let schema = mongoose.Schema(

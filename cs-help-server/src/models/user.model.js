@@ -1,5 +1,5 @@
 /** This model represents the User Schema
- * ID: auto-generated ID
+ * _id: auto-generated ID
  * name: user name
  * email: user email
  * projects: List of project identifier

@@ -1,6 +1,8 @@
 /** This model represents the Assignment Schema
- * ID: auto-generated ID
+ * _id: auto-generated ID
  * name: Assignment name
+ * projectId: id of the project associated with this assignment
+ * copies: list of project ids that are copies of this assignment
  **/
 module.exports = (mongoose) => {
   let schema = mongoose.Schema(
