@@ -2,10 +2,11 @@
  * Router to handle authentication with Passport
  * This router is used to handle Passport authentication using Google OAuth2
  */
-const { GOOGLE_ID, GOOGLE_SECRET } = process.env;
+const { GOOGLE_ID, GOOGLE_SECRET, MICROSOFT_ID, MICROSOFT_SECRET } = process.env;
 const express = require("express");
 var passport = require("passport");
 var GoogleStrategy = require("passport-google-oauth20");
+var MicrosoftStrategy = require('passport-microsoft').Strategy;
 const userController = require("../controllers/user.controller");
 const authController = require("../controllers/auth.controller");
 
@@ -122,10 +123,10 @@ router.get(
 
 /**
  * API to logout current user and delete session
- * url: POST /api/v1/logout/google
+ * url: POST /api/v1/logout
  * returns: redirect to the login page
  */
-router.post("/api/v1/logout/google", (req, res, next) => {
+router.post("/api/v1/logout", (req, res, next) => {
   req.logout();
   req.session.destroy((err) => {
     res.clearCookie("connect.sid");
