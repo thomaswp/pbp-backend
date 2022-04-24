@@ -70,6 +70,8 @@ passport.use(
 
 /**
  * Local Strategy to allow login via username only
+ * using no-password approach from:
+ * https://stackoverflow.com/questions/35079795/passport-login-authentication-without-password-field
  */
 passport.use(
   new LocalStrategy({
