@@ -7,11 +7,12 @@ const express = require("express");
 var passport = require("passport");
 var GoogleStrategy = require("passport-google-oauth20");
 var MicrosoftStrategy = require('passport-microsoft').Strategy;
+var LocalStrategy = require('passport-local');
 const userController = require("../controllers/user.controller");
 const authController = require("../controllers/auth.controller");
 
 /**
- * Passport Authentication Implementation
+ * Passport Google Authentication Implementation
  * Passport allows us to use Google OAuth2 Authentication system
  *
  * GOOGLE_ID: Google ID credential
@@ -62,7 +63,28 @@ passport.use(
       const name = `${profile.name?.givenName} ${profile.name?.familyName}`;
       const email = profile.emails[0]?.value;
 
-      await authController.loginUser(cb, subject, provider, name, email)
+      await authController.loginUser(cb, subject, provider, name, email);
+    }
+  )
+);
+
+/**
+ * Local Strategy to allow login via username only
+ */
+passport.use(
+  new LocalStrategy({
+      // no password field
+      usernameField: 'username',
+      passwordField: 'username',
+    },
+    async function(username, password, cb) {
+
+      const subject = username;
+      const provider = "local_nppass";
+      const name = username;
+      const email = username; // maybe blank string ""?
+
+      await authController.loginUser(cb, subject, provider, name, email);
     }
   )
 );
@@ -120,6 +142,22 @@ router.get(
     failureRedirect: "/login",
   })
 );
+
+
+
+/**
+ * Entry route to start local authentication
+ * url: POST /api/v1/login/local/nopass
+ * returns: Redirect to success or failure login page
+ *    (failure should never happen, as account is created if it doesn't exist)
+ */
+router.post('/api/v1/login/local/nopass',
+  passport.authenticate('local', { failureRedirect: '/login' } ),
+  function(req, res) {
+    console.log("succeeded in route handler")
+    res.status(200).redirect('/homepage');
+  }
+)
 
 /**
  * API to logout current user and delete session
