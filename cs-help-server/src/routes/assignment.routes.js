@@ -68,7 +68,6 @@ router.post("/api/v1/open/assignment", isLoggedIn, async (req, res) => {
   logger.debug(
     `POST /api/v1/assignment/:id new project id from assignment: ${projectID}`
   );
-  logger.info(`POST /api/v1/assignment/:id 200 success`);
   res.status(201);
   return res.json({ projectID: projectID });
 });
@@ -107,7 +106,6 @@ router.get("/api/v1/assignment", isLoggedIn, async (req, res) => {
   if (!assignmentList) {
     return res.status(500).json({ errMesg: "Not Found" });
   } else {
-    logger.info(`GET /api/v1/assignment 200 success`);
     return res.status(200).json(assignmentList);
   }
 });
@@ -129,7 +127,6 @@ router.get("/api/v1/assignment/:id", isLoggedIn, async (req, res) => {
     res.status(500);
     return res.json({ errMesg: "Not Found" });
   } else {
-    logger.info(`GET /api/v1/assignment/:id 200 success`);
     res.status(200);
     return res.json(assignment);
   }
@@ -149,7 +146,6 @@ router.delete("/api/v1/assignment/:id", isLoggedIn, async (req, res) => {
     }
     // set project isAssignment to false
     await assignmentController.deleteAssignment(assignment);
-    logger.info(`DELETE /api/v1/assignment/:id 200 success`);
     res.status(200);
     return res.json(assignment);
   } catch (err) {

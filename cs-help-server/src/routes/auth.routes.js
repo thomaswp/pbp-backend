@@ -142,9 +142,6 @@ router.get(
  * returns: redirect to the login page
  */
 router.post("/api/v1/logout/google", (req, res, next) => {
-  logger.info(
-    `POST /api/v1/logout/google LOGOUT user: ${req.session.passport.user})`
-  );
   req.logout();
   req.session.destroy((err) => {
     res.clearCookie("connect.sid");

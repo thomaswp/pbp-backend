@@ -11,6 +11,8 @@ const db = require("./src/models");
 const app = express();
 const port = process.env.NODE_DOCKER_PORT || 5000;
 
+const { reqLoggerSetup, errLoggerSetup } = require("./src/config/logger.config")
+
 userRouter = require("./src/routes/user.routes");
 authRouter = require("./src/routes/auth.routes");
 projectRouter = require("./src/routes/project.routes");
@@ -43,6 +45,8 @@ app.use(function(req, res, next) {
   req.session.messages = [];
   next();
 });
+// setup logging before we handle the requests
+reqLoggerSetup(app);
 
 // main apis
 app.use("/", authRouter);
@@ -52,6 +56,9 @@ app.use("/", assignmentRouter);
 
 // Swagger API docs
 require("./docs")(app);
+
+// log errors
+errLoggerSetup(app);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

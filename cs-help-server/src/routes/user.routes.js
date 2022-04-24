@@ -17,11 +17,9 @@ router.get("/api/v1/users/:id", isLoggedIn, async (req, res) => {
   let id = req.params.id;
   let founduser = await userController.findUser(id);
   if(!founduser) {
-    logger.error(`GET /api/v1/user/:id 500 not found`);
     res.status(500);
     return res.json({ errMesg: "Not Found" });
   } else {
-    logger.info(`GET /api/v1/user/:id 200 success`);
     res.status(200);
     return res.json(founduser);
   }
@@ -32,15 +30,15 @@ router.get("/api/v1/users/:id", isLoggedIn, async (req, res) => {
  * url: GET /api/v1/user
  * returns: User record
  */
-router.get("/api/v1/user", isLoggedIn, async (req, res) => {
+router.get("/api/v1/user", 
+// isLoggedIn, 
+async (req, res) => {
   let currentUser = await userController.findUser(req.session.passport?.user);
   logger.debug(`GET /api/v1/user current user: \n${currentUser}`);
   if (!currentUser) {
-    logger.error(`GET /api/v1/user 500 not found`);
     res.status(500);
     return res.json({ errMesg: "Not Found" });
   } else {
-    logger.info(`GET /api/v1/user 200 success`);
     res.status(200);
     return res.json(currentUser);
   }

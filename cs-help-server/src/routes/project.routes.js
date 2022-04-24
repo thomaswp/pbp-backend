@@ -28,12 +28,11 @@ router.post("/api/v1/projects", isLoggedIn, async (req, res) => {
       currentUser
     );
     logger.debug(`POST /api/v1/projects new project: \n${returnedProject}`);
-    logger.info(`POST /api/v1/projects 201 success`);
     res.status(201);
     return res.json(returnedProject);
   } catch (err) {
     logger.error(
-      `POST /api/v1/projects 500 error in creating project. Error message: \n${err}`
+      `POST /api/v1/projects error in creating project. Error message: \n${err}`
     );
     res.status(500);
     return res.json({ errMsg: "Error in creating project" });
@@ -56,14 +55,13 @@ router.post("/api/v1/project/reset", isLoggedIn, async (req, res) => {
       );
     }
   } catch (err) {
-    logger.error(`POST /api/v1/project/reset 500 error: ${err}`);
+    logger.error(`POST /api/v1/project/reset error: ${err}`);
     return res.status(500).json({ errMsg: "Failed to reset the project." });
   }
   if (!updatedProject) {
-    logger.error(`POST /api/v1/project/reset 500 failure`);
+    logger.error(`POST /api/v1/project/reset failure`);
     return res.status(500).json({ errMsg: "Failed to reset project" });
   }
-  logger.info(`POST /api/v1/project/reset 201 OK reset project: ${updatedProject}`);
   return res.status(201).json(updatedProject);
 });
 
@@ -103,7 +101,6 @@ router.put("/api/v1/projects/:id/name", isLoggedIn, async (req, res) => {
       logger.debug(
         `PUT /api/v1/projects/:id/name updated project name: \n${updatedProject}`
       );
-      logger.info(`PUT /api/v1/projects/:id/name 200 success`);
       res.status(200);
       return res.json(updatedProject);
     }
@@ -146,7 +143,6 @@ router.put("/api/v1/projects/:id/archive", isLoggedIn, async (req, res) => {
     logger.debug(
       `PUT /api/v1/projects/:id/archive updated project: \n${results}`
     );
-    logger.info(`PUT /api/v1/projects/:id/archive 200 success`);
     res.status(200);
     return res.json(results);
   }
@@ -182,7 +178,6 @@ router.put("/api/v1/projects/:id/unarchive", isLoggedIn, async (req, res) => {
     logger.debug(
       `PUT /api/v1/projects/:id/unarchive updated project: \n${results}`
     );
-    logger.info(`PUT /api/v1/projects/:id/unarchive 200 success`);
     res.status(200);
     return res.json(results);
   }
@@ -213,7 +208,6 @@ router.get("/api/v1/projects/:id", isLoggedIn, async (req, res) => {
     return res.json({ errMsg: "Project Not Found" });
   } else {
     logger.debug(`GET /api/v1/projects/:id found project: \n${project}`);
-    logger.info(`GET /api/v1/projects/:id 200 success`);
     res.status(200);
     return res.json(project);
   }
@@ -245,7 +239,6 @@ router.put("/api/v1/projects/:id/data", isLoggedIn, async (req, res) => {
     return res.json({ errMsg: "Cannot save a project you do not own" });
   } else {
     await projectController.saveProject(project, data);
-    logger.info(`PUT /api/v1/projects/:id/data 200 success`);
     return res.status(200).send();
   }
 });
