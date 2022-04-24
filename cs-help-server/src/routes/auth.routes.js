@@ -36,6 +36,36 @@ passport.use(
   )
 );
 
+/**
+ * Here's a list of the pages I used that helped me get this working:
+ *  - [passport strategy](https://www.passportjs.org/packages/passport-microsoft/)
+ *  - [moodle guide that worked for our needs](https://docs.moodle.org/400/en/OAuth_2_Microsoft_service)
+ *      - ignoring everything under "Additional Single Tenancy Configuration"
+ * bug fixing:
+ *  - [for redirect uri, has to be the exact uri, not just "localhost:3060"](https://docs.microsoft.com/en-us/answers/questions/557580/expose-an-api-registering-an-static-azure-web-page.html)
+ *  - [for redirect, using web instead of SPA](https://stackoverflow.com/questions/64692600/aadsts9002325-proof-key-for-code-exchange-is-required-for-cross-origin-authoriz)
+ *  - [for audience, use "org accounts and personal accounts"](https://docs.microsoft.com/en-us/answers/questions/558703/when-i-am-trying-to-make-my-first-api-call-i-get-3.html)
+ */
+passport.use(
+  new MicrosoftStrategy(
+    {
+      clientID: MICROSOFT_ID,
+      clientSecret: MICROSOFT_SECRET,
+      callbackURL: "http://localhost:3060/api/v1/oauth2/redirect/microsoft",
+      scope: ['user.read']
+    },
+    async (accessToken, refreshToken, profile, cb) => {
+
+      const subject = profile.id;
+      const provider = profile.provider;
+      const name = `${profile.name?.givenName} ${profile.name?.familyName}`;
+      const email = profile.emails[0]?.value;
+
+      await authController.loginUser(cb, subject, provider, name, email)
+    }
+  )
+);
+
 passport.serializeUser((user, cb) => {
   cb(null, user.id);
 });
@@ -65,6 +95,26 @@ router.get("/api/v1/login/federated/google", passport.authenticate("google"));
 router.get(
   "/api/v1/oauth2/redirect/google",
   passport.authenticate("google", {
+    successReturnToOrRedirect: "/homepage",
+    failureRedirect: "/login",
+  })
+);
+
+/**
+ * Entry route to start Microsoft authentication
+ * url: GET /api/v1/login/federated/microsoft
+ * returns: Redirect to Microsoft login
+ */
+router.get("/api/v1/login/federated/microsoft", passport.authenticate("microsoft"));
+
+/**
+ * API used by Microsoft after authentication
+ * url: GET /api/v1/oauth2/redirect/microsoft
+ * returns: redirect to success or failure login page
+ */
+router.get(
+  "/api/v1/oauth2/redirect/microsoft",
+  passport.authenticate("microsoft", {
     successReturnToOrRedirect: "/homepage",
     failureRedirect: "/login",
   })
