@@ -7,7 +7,7 @@ const express = require("express");
 var passport = require("passport");
 var GoogleStrategy = require("passport-google-oauth20");
 const userController = require("../controllers/user.controller");
-const fedIDController = require("../controllers/federated_identity.controller");
+const authController = require("../controllers/auth.controller");
 const { logger } = require("../config/logger.config");
 
 /**
@@ -28,76 +28,11 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, cb) => {
       const subject = profile.id;
-      const name = `${profile.name?.givenName} ${profile.name?.familyName}`;
       const provider = profile.provider;
+      const name = `${profile.name?.givenName} ${profile.name?.familyName}`;
       const email = profile.emails[0]?.value;
-      logger.debug(
-        `GET /api/v1/login/federated/google LOGIN using Google profile: ${name} (${email})`
-      );
-
-      const currentFedID = await fedIDController.findFederatedID({
-        provider,
-        subject,
-      });
-      logger.debug(
-        `GET /api/v1/login/federated/google LOGIN Federated ID: \n${currentFedID}`
-      );
-
-      // Check if federated exist. If not, create new user, otherwise return existing user
-      if (!currentFedID) {
-        // Create new user
-        const newUser = await userController.createUser({
-          name,
-          email,
-          projects: {},
-          templates: [],
-        });
-        if (!newUser) {
-          logger.error(
-            `GET /api/v1/login/federated/google Something went wrong when creating new user: ${email}`
-          );
-          return cb(null, false, {
-            message: `Something went wrong when creating user`,
-          });
-        }
-        const newFedID = await fedIDController.createFederatedID({
-          provider,
-          subject,
-          internal_id: newUser.id,
-        });
-        if (!newFedID) {
-          logger.error(
-            `GET /api/v1/login/federated/google Something went wrong when creating new Federated ID: ${email}`
-          );
-          return cb(null, false, {
-            message: `Something went wrong when creating Federated ID`,
-          });
-        }
-        logger.info(
-          `GET /api/v1/login/federated/google new user created: ${name} (${email})`
-        );
-        return cb(null, newUser);
-      } else {
-        // Return existing user
-        const currentUser = await userController.findUser(
-          currentFedID.internal_id
-        );
-        logger.debug(
-          `GET /api/v1/login/federated/google user data: ${currentUser}`
-        );
-        if (!currentUser) {
-          logger.error(
-            `GET /api/v1/login/federated/google Something went wrong, user does not exist but federated ID exist. Check DB: ${email}`
-          );
-          return cb(null, false, {
-            message: `Something went wrong when finding existing user`,
-          });
-        }
-        logger.info(
-          `GET /api/v1/login/federated/google existing user login: ${name} (${email})`
-        );
-        return cb(null, currentUser);
-      }
+      
+      await authController.loginUser(cb, subject, provider, name, email)
     }
   )
 );
