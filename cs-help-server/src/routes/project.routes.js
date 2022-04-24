@@ -76,15 +76,15 @@ router.put("/api/v1/projects/:id/name", isLoggedIn, async (req, res) => {
     let project = await projectController.getProject(projectid);
     if (project.owner !== req.session.passport?.user) {
       logger.error(
-        `POST /api/v1/projects/:id/name 500 error: cannot edit project you do not own}`
+        `POST /api/v1/projects/:id/name 403 error: cannot edit project you do not own}`
       );
-      res.status(401);
+      res.status(403);
       return res.json({ errMsg: "Cannot edit project you do not own" });
     } else if (req.body.name === "") {
       logger.error(
-        `POST /api/v1/projects/:id/name 500 error: project name cannot be empty`
+        `POST /api/v1/projects/:id/name 400 error: project name cannot be empty`
       );
-      res.status(500);
+      res.status(400);
       return res.json({ errMsg: "Name cannot be empty" });
     } else {
       //updating project name in projects
@@ -134,9 +134,9 @@ router.put("/api/v1/projects/:id/archive", isLoggedIn, async (req, res) => {
   }
   if (project.owner !== req.session.passport?.user) {
     logger.error(
-      `PUT /api/v1/projects/:id/archive 401 error: cannot archive project user do not own`
+      `PUT /api/v1/projects/:id/archive 403 error: cannot archive project user do not own`
     );
-    res.status(401);
+    res.status(403);
     return res.json({ errMsg: "Cannot archive project you do not own" });
   } else {
     const results = await projectController.setArchived(project, true);
@@ -169,9 +169,9 @@ router.put("/api/v1/projects/:id/unarchive", isLoggedIn, async (req, res) => {
   }
   if (project.owner !== req.session.passport?.user) {
     logger.error(
-      `PUT /api/v1/projects/:id/unarchive 401 error: cannot unarchive project user do not own`
+      `PUT /api/v1/projects/:id/unarchive 403 error: cannot unarchive project user do not own`
     );
-    res.status(401);
+    res.status(403);
     return res.json({ errMsg: "Cannot unarchive project you do not own" });
   } else {
     const results = await projectController.setArchived(project, false);
@@ -234,8 +234,8 @@ router.put("/api/v1/projects/:id/data", isLoggedIn, async (req, res) => {
     });
   }
   if (project.owner !== req.session.passport?.user) {
-    logger.error(`PUT /api/v1/projects/:id/data 401 error in saving project`);
-    res.status(401);
+    logger.error(`PUT /api/v1/projects/:id/data 403 error in saving project`);
+    res.status(403);
     return res.json({ errMsg: "Cannot save a project you do not own" });
   } else {
     await projectController.saveProject(project, data);

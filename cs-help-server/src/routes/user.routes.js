@@ -17,7 +17,7 @@ router.get("/api/v1/users/:id", isLoggedIn, async (req, res) => {
   let id = req.params.id;
   let founduser = await userController.findUser(id);
   if(!founduser) {
-    res.status(500);
+    res.status(404);
     return res.json({ errMesg: "Not Found" });
   } else {
     res.status(200);
@@ -36,7 +36,7 @@ async (req, res) => {
   let currentUser = await userController.findUser(req.session.passport?.user);
   logger.debug(`GET /api/v1/user current user: \n${currentUser}`);
   if (!currentUser) {
-    res.status(500);
+    res.status(404);
     return res.json({ errMesg: "Not Found" });
   } else {
     res.status(200);

@@ -38,10 +38,10 @@ router.post("/api/v1/open/assignment", isLoggedIn, async (req, res) => {
 
   if (!currentAssignment || !currentUser) {
     logger.error(
-      `POST /api/v1/assignment/:id 400 error invalid assignment and user`
+      `POST /api/v1/assignment/:id 404 error invalid assignment and user`
     );
     return res
-      .status(400)
+      .status(404)
       .json({ errMsg: "Failed to open the project from assignment." });
   }
 
@@ -104,7 +104,7 @@ router.get("/api/v1/assignment", isLoggedIn, async (req, res) => {
   let assignmentList = await assignmentController.getAllAssignments();
   logger.debug(`GET /api/v1/assignment all assignment: ${assignmentList}`);
   if (!assignmentList) {
-    return res.status(500).json({ errMesg: "Not Found" });
+    return res.status(404).json({ errMesg: "Not Found" });
   } else {
     return res.status(200).json(assignmentList);
   }
@@ -118,13 +118,13 @@ router.get("/api/v1/assignment", isLoggedIn, async (req, res) => {
 router.get("/api/v1/assignment/:id", isLoggedIn, async (req, res) => {
   let currentProj = await projectController.getProject(req.params.id)
   if (!currentProj) {
-    res.status(500);
+    res.status(404);
     return res.json({ errMesg: "Not Found" });
   }
   let assignment = await assignmentController.getAssignment(currentProj.assignmentId);
   logger.debug(`GET /api/v1/assignment/:id get an assignment: ${assignment}`);
   if (!assignment) {
-    res.status(500);
+    res.status(404);
     return res.json({ errMesg: "Not Found" });
   } else {
     res.status(200);
@@ -141,7 +141,7 @@ router.delete("/api/v1/assignment/:id", isLoggedIn, async (req, res) => {
   try {
     let assignment = await assignmentController.getAssignment(req.params.id);
     if (!assignment) {
-      res.status(500);
+      res.status(404);
       return res.json({ errMesg: "Not Found" });
     }
     // set project isAssignment to false

@@ -20,9 +20,12 @@ module.exports = {
       responses: {
         // response code
         201: {
-          description: "Project Resetted successfully", // response desc
+          description: "Project Reset successfully", // response desc
         },
         // response code
+        404: {
+          description: "Assignment not found"
+        },
         500: {
           description: "Server error", // response desc
         },

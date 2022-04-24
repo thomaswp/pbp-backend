@@ -22,12 +22,15 @@ module.exports = {
       201: {
         description: "Project created successfully from assignment", // response desc
       },
+      401: {
+        description: "Unauthenticated", // response desc
+      },
+      404: {
+        description: "Could not find project or assignment"
+      },
       // response code
       500: {
         description: "Server error", // response desc
-      },
-      401: {
-        description: "Unauthenticated", // response desc
       },
     },
   },

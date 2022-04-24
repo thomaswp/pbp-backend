@@ -7,7 +7,7 @@ module.exports = {
             '200':{
                 description:"User is retrieved"
             },
-            '500':{
+            '404':{
                 description: "User is not found"
             }
         }

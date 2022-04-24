@@ -7,8 +7,8 @@ module.exports = {
             '200':{
                 description:"Assignments are retrieved"
             },
-            '500':{
-                description: "Assignments not found"
+            '404':{
+                description: "Problem retrieving all assignments"
             }
         }
     }

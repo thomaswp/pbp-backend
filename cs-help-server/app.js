@@ -72,7 +72,7 @@ app.use(function(err, req, res, next) {
   res.locals.error = {};
 
   // render the error page
-  res.status(err.status || 500);
+  res.status(err.status || 404);
   res.send(`404 ${err.message}`);
   //res.render('error');
 });

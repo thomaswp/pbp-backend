@@ -18,6 +18,9 @@ module.exports = {
             '200':{
                 description:"Assignment is deleted"
             },
+            '404':{
+                description: "Assignment not found"
+            },
             '500':{
                 description: "Assignment failed to be deleted"
             }
