@@ -8,7 +8,6 @@ var passport = require("passport");
 var GoogleStrategy = require("passport-google-oauth20");
 const userController = require("../controllers/user.controller");
 const authController = require("../controllers/auth.controller");
-const { logger } = require("../config/logger.config");
 
 /**
  * Passport Authentication Implementation

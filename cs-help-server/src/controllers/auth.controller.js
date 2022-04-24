@@ -15,49 +15,19 @@ exports.loginUser = async (cb, subject, provider, name, email) => {
     `loginUser(): Check if account already exists: ${Boolean(currentFedID)}`
   );
 
-  // Check if federated exist. If not, create new user, otherwise return existing user
+  // Check if this login has been seen before
   if (!currentFedID) {
-    // Create new user
-    const newUser = await userController.createUser({
-      name,
-      email,
-      projects: {},
-      templates: [],
-    });
-    if (!newUser) {
-      logger.error(
-        `loginUser(): Something went wrong when creating new user: ${email}`
-      );
-      return cb(null, false, {
-        message: `Something went wrong when creating user`,
-      });
-    }
-    const newFedID = await fedIDController.createFederatedID({
-      provider,
-      subject,
-      internal_id: newUser.id,
-    });
-    if (!newFedID) {
-      logger.error(
-        `loginUser(): Something went wrong when creating new Federated ID: ${email}`
-      );
-      return cb(null, false, {
-        message: `Something went wrong when creating Federated ID`,
-      });
-    }
-    logger.info(
-      `loginUser(): new user created: ${name} (${email})`
-    );
-    return cb(null, newUser);
+    // If not, create a new account for the user
+    return createUser(cb, subject, provider, name, email);
   } else {
     // Return existing user
-    const currentUser = await userController.findUser(
-      currentFedID.internal_id
-    );
+    const foundUser = await userController.findUser(currentFedID.internal_id);
     logger.debug(
-      `loginUser(): federated login exists, retrieving user data: ${currentUser}`
+      `loginUser(): found user data: ${foundUser}`
     );
-    if (!currentUser) {
+
+    // if none, complain
+    if (!foundUser) {
       logger.error(
         `loginUser(): Something went wrong, user does not exist but federated ID exist. Check DB: ${email}`
       );
@@ -65,9 +35,55 @@ exports.loginUser = async (cb, subject, provider, name, email) => {
         message: `loginUser(): Something went wrong when finding existing user`,
       });
     }
+
+    // we're good, go return them
     logger.info(
       `loginUser(): existing user login: ${name} (${email})`
     );
-    return cb(null, currentUser);
+    return cb(null, foundUser)
   }
+};
+
+async function createUser(cb, subject, provider, name, email) {
+
+  // Create new user
+  const newUser = await userController.createUser({
+    name,
+    email,
+    projects: {},
+    templates: [],
+  });
+  // if new user could not be created, complain
+  if (!newUser) {
+    const msg = `Something went wrong when creating new user: ${email}`
+    logger.error(
+      `loginUser(): ${msg}`
+    );
+    return cb(null, false, {
+      message: msg,
+    });
+  }
+
+  // Create new federated ID
+  const newFedID = await fedIDController.createFederatedID({
+    provider,
+    subject,
+    internal_id: newUser.id,
+  });
+  // if new fed id could not be created, complain
+  if (!newFedID) {
+    const msg = `Something went wrong when creating new Federated ID: ${email}`
+    logger.error(
+      `loginUser(): ${msg}`
+    );
+    return cb(null, false, {
+      message: msg,
+    });
+  }
+
+  // successfully created
+  logger.info(
+    `createUser(): new user created: ${name} (${email})`
+  );
+  return cb(null, newUser);
 }
