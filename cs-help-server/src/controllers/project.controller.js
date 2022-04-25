@@ -73,10 +73,15 @@ exports.setArchived = async (project, isArchived = true) => {
  * @param {*} reteData rete data to be saved
  * @returns newly saved project
  */
-exports.saveProject = async (project, reteData) => {
+exports.saveProject = async (project, reteData, custom_blocks = null) => {
   // update project data in its document
   project.data = reteData;
   project.markModified("data");
+  // if custom blocks provided, update that too
+  if (custom_blocks) {
+    project.custom_blocks = custom_blocks;
+    project.markModified("custom_blocks");
+  }
   await project.save();
 
   // return modified project

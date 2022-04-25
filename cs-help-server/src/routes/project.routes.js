@@ -220,6 +220,7 @@ router.get("/api/v1/projects/:id", isLoggedIn, async (req, res) => {
  */
 router.put("/api/v1/projects/:id/data", isLoggedIn, async (req, res) => {
   const data = req.body.data;
+  const custom_blocks = req.body.custom_blocks;
   let id = req.params.id;
   let project;
   try {
@@ -238,7 +239,7 @@ router.put("/api/v1/projects/:id/data", isLoggedIn, async (req, res) => {
     res.status(403);
     return res.json({ errMsg: "Cannot save a project you do not own" });
   } else {
-    await projectController.saveProject(project, data);
+    await projectController.saveProject(project, data, custom_blocks);
     return res.status(200).send();
   }
 });

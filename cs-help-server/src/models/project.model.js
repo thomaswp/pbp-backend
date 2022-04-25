@@ -22,6 +22,7 @@ module.exports = (mongoose) => {
         default: false,
       },
       assignmentId: { type: String, default: "" },
+      custom_blocks: Array,
     },
     {
       timestamps: true,
