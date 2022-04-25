@@ -23,6 +23,7 @@ module.exports = (mongoose) => {
       },
       assignmentId: { type: String, default: "" },
       custom_blocks: Array,
+      block_libs: Array,
     },
     {
       timestamps: true,
