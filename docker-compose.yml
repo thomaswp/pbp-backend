@@ -26,7 +26,8 @@ services:
     volumes:
       - ./cs-help-server:/cs-help-server
       - /cs-help-server/node_modules
-    command: nodemon app.js
+    # whenever the app goes down, restart after 3 seconds
+    command: nodemon -x "node app.js || (sleep 3; touch app.js)"
     restart: unless-stopped
     env_file: ./.env
     expose:
