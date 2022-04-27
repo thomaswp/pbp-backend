@@ -4,7 +4,7 @@
  */
 const express = require("express");
 const userController = require("../controllers/user.controller");
-const { isLoggedIn } = require("../middleware/ensureLoggedIn");
+const { isLoggedIn, ensureLoggedInAs } = require("../middleware/ensureLoggedIn");
 const { logger } = require("../config/logger.config");
 let router = express.Router();
 
@@ -13,7 +13,10 @@ let router = express.Router();
  * url: GET /api/v1/users/:id
  * returns: passed ID
  */
-router.get("/api/v1/users/:id", isLoggedIn, async (req, res) => {
+router.get("/api/v1/users/:id",
+    // ensure logged in as the user we're requesting
+    ensureLoggedInAs((req) => req.params.id),
+    async (req, res) => {
   let id = req.params.id;
   let founduser = await userController.findUser(id);
   if(!founduser) {
