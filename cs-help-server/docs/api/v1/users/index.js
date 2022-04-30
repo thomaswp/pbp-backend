@@ -1,15 +1,11 @@
-const getUser = require('./get-user');
+const getUser = require("./get-user");
+const getLoggedUser = require("./get-logged-user");
 
 module.exports = {
-    paths:{
-        // '/users':{
-        //     ...getUsers,
-        //     ...createUser
-        // },
-        '/users/{id}':{
-            // ...updateUser,
-            // ...deleteUser,
-            ...getUser
-        }
-    }
-}
+  "/user": {
+    ...getLoggedUser,
+  },
+  "/users/{id}": {
+    ...getUser,
+  },
+};

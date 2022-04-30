@@ -5,6 +5,10 @@ module.exports = {
             description: "User accounts (not authentication)"
         },
         {
+            name: 'assignment',
+            description: "Assignment in the system"
+        },
+        {
             name: 'auth',
             description: "Authentication, sessions, etc."
         },

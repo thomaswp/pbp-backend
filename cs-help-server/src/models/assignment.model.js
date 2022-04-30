@@ -1,18 +1,16 @@
-/** This model represents the User Schema
+/** This model represents the Assignment Schema
  * _id: auto-generated ID
- * name: user name
- * email: user email
- * projects: List of project identifier
- * templates: list of project templates
- * */
+ * name: Assignment name
+ * projectId: id of the project associated with this assignment
+ * copies: list of project ids that are copies of this assignment
+ **/
 module.exports = (mongoose) => {
   let schema = mongoose.Schema(
     {
       _id: String,
       name: String,
-      email: String,
-      projects: Object,
-      templates: [String],
+      projectId: String,
+      copies: Object,
     },
     {
       timestamps: true,
@@ -24,6 +22,6 @@ module.exports = (mongoose) => {
     object.id = _id;
     return object;
   });
-  const User = mongoose.model("user", schema);
-  return User;
+  const Assignment = mongoose.model("assignment", schema);
+  return Assignment;
 };

@@ -11,6 +11,8 @@ module.exports = function () {
     await db.users.deleteMany({})
 
     await db.projects.deleteMany({})
+
+    await db.assignments.deleteMany({})
   });
 
   afterEach(async function () {

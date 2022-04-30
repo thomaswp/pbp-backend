@@ -12,6 +12,12 @@ services:
       - $MONGODB_LOCAL_PORT:$MONGODB_DOCKER_PORT
     volumes:
       - db:/data/db
+    # # uncomment the following to skip ALL logging for this container
+    # # ideally we find a way to skip stdout logging on the `docker-compose` command,
+    # # but preserve the file logging that the default driver "json-file" uses
+    # # https://stackoverflow.com/questions/34590317/disable-logging-for-one-container-in-docker-compose
+    # logging:
+    #   driver: json-file
   app-backend:
     container_name: cs-help-server
     build: ./cs-help-server
@@ -20,7 +26,8 @@ services:
     volumes:
       - ./cs-help-server:/cs-help-server
       - /cs-help-server/node_modules
-    command: nodemon app.js
+    # whenever the app goes down, restart after 3 seconds
+    command: nodemon -x "node app.js || (sleep 3; touch app.js)"
     restart: unless-stopped
     env_file: ./.env
     expose:
@@ -33,6 +40,8 @@ services:
       - DB_PORT=$MONGODB_DOCKER_PORT
       - GOOGLE_ID=$GOOGLE_CLIENT_ID
       - GOOGLE_SECRET=$GOOGLE_CLIENT_SECRET
+      - MICROSOFT_ID=$MICROSOFT_CLIENT_ID
+      - MICROSOFT_SECRET=$MICROSOFT_CLIENT_SECRET
     stdin_open: true
     tty: true
   app-frontend:
@@ -58,5 +67,7 @@ services:
       context: ./nginx
     ports:
       - "3060:80"
+    # logging:
+    #   driver: none
 volumes:
   db:

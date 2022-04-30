@@ -2,15 +2,17 @@
  * Router to handle authentication with Passport
  * This router is used to handle Passport authentication using Google OAuth2
  */
-const { GOOGLE_ID, GOOGLE_SECRET } = process.env;
+const { GOOGLE_ID, GOOGLE_SECRET, MICROSOFT_ID, MICROSOFT_SECRET } = process.env;
 const express = require("express");
 var passport = require("passport");
 var GoogleStrategy = require("passport-google-oauth20");
+var MicrosoftStrategy = require('passport-microsoft').Strategy;
+var LocalStrategy = require('passport-local');
 const userController = require("../controllers/user.controller");
-const fedIDController = require("../controllers/federated_identity.controller");
+const authController = require("../controllers/auth.controller");
 
 /**
- * Passport Authentication Implementation
+ * Passport Google Authentication Implementation
  * Passport allows us to use Google OAuth2 Authentication system
  *
  * GOOGLE_ID: Google ID credential
@@ -26,61 +28,65 @@ passport.use(
       scope: ["openid", "profile", "email"],
     },
     async (accessToken, refreshToken, profile, cb) => {
-      console.log(profile);
       const subject = profile.id;
-      const name = `${profile.name?.givenName} ${profile.name?.familyName}`;
       const provider = profile.provider;
+      const name = `${profile.name?.givenName} ${profile.name?.familyName}`;
+      const email = profile.emails[0]?.value;
+      
+      await authController.loginUser(cb, subject, provider, name, email)
+    }
+  )
+);
+
+/**
+ * Here's a list of the pages I used that helped me get this working:
+ *  - [passport strategy](https://www.passportjs.org/packages/passport-microsoft/)
+ *  - [moodle guide that worked for our needs](https://docs.moodle.org/400/en/OAuth_2_Microsoft_service)
+ *      - ignoring everything under "Additional Single Tenancy Configuration"
+ * bug fixing:
+ *  - [for redirect uri, has to be the exact uri, not just "localhost:3060"](https://docs.microsoft.com/en-us/answers/questions/557580/expose-an-api-registering-an-static-azure-web-page.html)
+ *  - [for redirect, using web instead of SPA](https://stackoverflow.com/questions/64692600/aadsts9002325-proof-key-for-code-exchange-is-required-for-cross-origin-authoriz)
+ *  - [for audience, use "org accounts and personal accounts"](https://docs.microsoft.com/en-us/answers/questions/558703/when-i-am-trying-to-make-my-first-api-call-i-get-3.html)
+ */
+passport.use(
+  new MicrosoftStrategy(
+    {
+      clientID: MICROSOFT_ID,
+      clientSecret: MICROSOFT_SECRET,
+      callbackURL: "http://localhost:3060/api/v1/oauth2/redirect/microsoft",
+      scope: ['user.read']
+    },
+    async (accessToken, refreshToken, profile, cb) => {
+
+      const subject = profile.id;
+      const provider = profile.provider;
+      const name = `${profile.name?.givenName} ${profile.name?.familyName}`;
       const email = profile.emails[0]?.value;
 
-      const currentFedID = await fedIDController.findFederatedID({
-        provider,
-        subject,
-      });
-      console.log(`foundID: ${currentFedID}`);
+      await authController.loginUser(cb, subject, provider, name, email);
+    }
+  )
+);
 
-      // Check if federated exist. If not, create new user, otherwise return existing user
-      if (!currentFedID) {
-        // Create new user
-        const newUser = await userController.createUser({
-          name,
-          email,
-          projects: {},
-          templates: [],
-        });
-        if (!newUser) {
-          console.log(`Something went wrong when creating new user!`);
-          return cb(null, false, {
-            message: `Something went wrong when creating user`,
-          });
-        }
-        const newFedID = await fedIDController.createFederatedID({
-          provider,
-          subject,
-          internal_id: newUser.id,
-        });
-        if (!newFedID) {
-          console.log(`Something went wrong when creating new Federated ID!`);
-          return cb(null, false, {
-            message: `Something went wrong when creating Federated ID`,
-          });
-        }
-        return cb(null, newUser);
-      } else {
-        // Return existing user
-        const currentUser = await userController.findUser(
-          currentFedID.internal_id
-        );
-        console.log(`foundUser: ${currentUser}`);
-        if (!currentUser) {
-          console.log(
-            `Something went wrong, user does not exist but federated ID exist. Check DB!`
-          );
-          return cb(null, false, {
-            message: `Something went wrong when finding existing user`,
-          });
-        }
-        return cb(null, currentUser);
-      }
+/**
+ * Local Strategy to allow login via username only
+ * using no-password approach from:
+ * https://stackoverflow.com/questions/35079795/passport-login-authentication-without-password-field
+ */
+passport.use(
+  new LocalStrategy({
+      // no password field
+      usernameField: 'username',
+      passwordField: 'username',
+    },
+    async function(username, password, cb) {
+
+      const subject = username;
+      const provider = "local_nppass";
+      const name = username;
+      const email = username; // maybe blank string ""?
+
+      await authController.loginUser(cb, subject, provider, name, email);
     }
   )
 );
@@ -120,11 +126,47 @@ router.get(
 );
 
 /**
+ * Entry route to start Microsoft authentication
+ * url: GET /api/v1/login/federated/microsoft
+ * returns: Redirect to Microsoft login
+ */
+router.get("/api/v1/login/federated/microsoft", passport.authenticate("microsoft"));
+
+/**
+ * API used by Microsoft after authentication
+ * url: GET /api/v1/oauth2/redirect/microsoft
+ * returns: redirect to success or failure login page
+ */
+router.get(
+  "/api/v1/oauth2/redirect/microsoft",
+  passport.authenticate("microsoft", {
+    successReturnToOrRedirect: "/homepage",
+    failureRedirect: "/login",
+  })
+);
+
+
+
+/**
+ * Entry route to start local authentication
+ * url: POST /api/v1/login/local/nopass
+ * returns: Redirect to success or failure login page
+ *    (failure should never happen, as account is created if it doesn't exist)
+ */
+router.post('/api/v1/login/local/nopass',
+  passport.authenticate('local', { failureRedirect: '/login' } ),
+  function(req, res) {
+    console.log("succeeded in route handler")
+    res.status(200).redirect('/homepage');
+  }
+)
+
+/**
  * API to logout current user and delete session
- * url: POST /api/v1/logout/google
+ * url: POST /api/v1/logout
  * returns: redirect to the login page
  */
-router.post("/api/v1/logout/google", (req, res, next) => {
+router.post("/api/v1/logout", (req, res, next) => {
   req.logout();
   req.session.destroy((err) => {
     res.clearCookie("connect.sid");

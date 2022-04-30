@@ -4,7 +4,7 @@ const { nanoid } = require("nanoid");
 
 /**
  * Create a new user
- * @param {*} user
+ * @param {*} user the user object being passed in
  * @returns User object if suceeded. False if failed
  */
 exports.createUser = (user) => {
@@ -23,7 +23,7 @@ exports.createUser = (user) => {
 
 /**
  * Find a user by ID
- * @param {*} userID
+ * @param {*} userID the userID to be found in the database
  * @returns User (promise)
  */
 exports.findUser = (userID) => {
@@ -49,7 +49,7 @@ exports.findUser = (userID) => {
 
 /**
  * Delete an existing user by ID
- * @param {*} userID
+ * @param {*} userID the UserID to be deleted
  * @returns deleted User
  */
 exports.deleteUser = async (userID) => {
