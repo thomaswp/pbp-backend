@@ -53,6 +53,7 @@ services:
       - ./pbp:/cs-help-pbp
       - /cs-help-pbp/node_modules
     restart: unless-stopped
+    env_file: ./.env
     expose:
       - $VUE_DOCKER_PORT
     stdin_open: true

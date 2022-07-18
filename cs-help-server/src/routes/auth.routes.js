@@ -1,3 +1,5 @@
+const { APP_PROTOCOL, APP_FQDN, APP_LOCAL_PORT } = process.env
+
 /**
  * Router to handle authentication with Passport
  * This router is used to handle Passport authentication using Google OAuth2
@@ -24,7 +26,7 @@ passport.use(
     {
       clientID: GOOGLE_ID,
       clientSecret: GOOGLE_SECRET,
-      callbackURL: "http://localhost:3060/api/v1/oauth2/redirect/google",
+      callbackURL: `${APP_PROTOCOL}://${APP_FQDN}:${APP_LOCAL_PORT}/api/v1/oauth2/redirect/google`,
       scope: ["openid", "profile", "email"],
     },
     async (accessToken, refreshToken, profile, cb) => {
@@ -44,7 +46,7 @@ passport.use(
  *  - [moodle guide that worked for our needs](https://docs.moodle.org/400/en/OAuth_2_Microsoft_service)
  *      - ignoring everything under "Additional Single Tenancy Configuration"
  * bug fixing:
- *  - [for redirect uri, has to be the exact uri, not just "localhost:3060"](https://docs.microsoft.com/en-us/answers/questions/557580/expose-an-api-registering-an-static-azure-web-page.html)
+ *  - [for redirect uri, has to be the exact uri, not just "FQDN:PORT"](https://docs.microsoft.com/en-us/answers/questions/557580/expose-an-api-registering-an-static-azure-web-page.html)
  *  - [for redirect, using web instead of SPA](https://stackoverflow.com/questions/64692600/aadsts9002325-proof-key-for-code-exchange-is-required-for-cross-origin-authoriz)
  *  - [for audience, use "org accounts and personal accounts"](https://docs.microsoft.com/en-us/answers/questions/558703/when-i-am-trying-to-make-my-first-api-call-i-get-3.html)
  */
@@ -53,7 +55,7 @@ passport.use(
     {
       clientID: MICROSOFT_ID,
       clientSecret: MICROSOFT_SECRET,
-      callbackURL: "http://localhost:3060/api/v1/oauth2/redirect/microsoft",
+      callbackURL: `${APP_PROTOCOL}://${APP_FQDN}:${APP_LOCAL_PORT}/api/v1/oauth2/redirect/microsoft`,
       scope: ['user.read']
     },
     async (accessToken, refreshToken, profile, cb) => {

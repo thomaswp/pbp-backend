@@ -1,3 +1,5 @@
+// TODO: use env vars here. For now this is just outdated documentation
+
 module.exports = {
     servers:[
         {
